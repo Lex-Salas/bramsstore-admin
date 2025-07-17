@@ -515,7 +515,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Cargando datos enterprise...</span>
+          <span className="ml-2 text-gray-900">Cargando datos enterprise...</span>
         </div>
       );
     }
@@ -548,12 +548,12 @@ const BramsStoreAdmin = () => {
               ) : (
                 <WifiOff className="w-4 h-4 text-red-500 mr-1" />
               )}
-              {isOnline ? 'Online' : 'Offline'}
+              <span className="text-gray-900">{isOnline ? 'Online' : 'Offline'}</span>
             </div>
             
             <div className="flex items-center text-sm text-gray-600">
               <Clock className="w-4 h-4 mr-1" />
-              Última sync: {formatTimeAgo(lastSync)}
+              <span className="text-gray-900">Última sync: {formatTimeAgo(lastSync)}</span>
             </div>
             
             <button
@@ -566,7 +566,7 @@ const BramsStoreAdmin = () => {
               }`}
             >
               <RefreshCw className={`w-4 h-4 mr-1 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
-              {syncStatus === 'syncing' ? 'Sincronizando...' : 'Sincronizar'}
+              <span className="text-gray-900">{syncStatus === 'syncing' ? 'Sincronizando...' : 'Sincronizar'}</span>
             </button>
           </div>
         </div>
@@ -637,9 +637,9 @@ const BramsStoreAdmin = () => {
                 <tbody>
                   {orders.orders?.slice(0, 5).map(order => (
                     <tr key={order.id} className="border-b">
-                      <td className="py-2 font-mono text-sm">{order.orderNumber}</td>
-                      <td className="py-2">{order.customer.fullName}</td>
-                      <td className="py-2 font-semibold">{formatPrice(order.pricing.total)}</td>
+                      <td className="py-2 font-mono text-sm text-gray-900">{order.orderNumber}</td>
+                      <td className="py-2 text-gray-900">{order.customer.fullName}</td>
+                      <td className="py-2 font-semibold text-gray-900">{formatPrice(order.pricing.total)}</td>
                       <td className="py-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           order.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -650,9 +650,9 @@ const BramsStoreAdmin = () => {
                           {order.status}
                         </span>
                       </td>
-                      <td className="py-2 text-sm">{new Date(order.timestamps.created).toLocaleDateString()}</td>
+                      <td className="py-2 text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</td>
                       <td className="py-2">
-                        <span className="inline-flex items-center">
+                        <span className="inline-flex items-center text-gray-900">
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                           Enterprise
                         </span>
@@ -674,7 +674,7 @@ const BramsStoreAdmin = () => {
                 <div className="flex items-center space-x-4">
                   <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
                   <div>
-                    <p className="font-semibold">{product.name}</p>
+                    <p className="font-semibold text-gray-900">{product.name}</p>
                     <p className="text-sm text-gray-600">{product.sales.totalSold} ventas • SKU: {product.sku}</p>
                   </div>
                 </div>
@@ -738,7 +738,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Cargando productos desde GitHub...</span>
+          <span className="ml-2 text-gray-900">Cargando productos desde GitHub...</span>
         </div>
       );
     }
@@ -786,14 +786,14 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold">{product.name}</p>
+                        <p className="font-semibold text-gray-900">{product.name}</p>
                         <p className="text-sm text-gray-600">{product.category.name}</p>
                       </div>
                     </td>
-                    <td className="py-2 font-mono text-sm">{product.sku}</td>
+                    <td className="py-2 font-mono text-sm text-gray-900">{product.sku}</td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold">{formatPrice(product.pricing.price)}</p>
+                        <p className="font-semibold text-gray-900">{formatPrice(product.pricing.price)}</p>
                         <p className="text-xs text-gray-500">Margen: {product.pricing.profitMargin}%</p>
                       </div>
                     </td>
@@ -811,7 +811,7 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold">{product.sales.totalSold}</p>
+                        <p className="font-semibold text-gray-900">{product.sales.totalSold}</p>
                         <p className="text-xs text-gray-500">{formatPrice(product.sales.revenue)}</p>
                       </div>
                     </td>
@@ -849,7 +849,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Cargando pedidos desde GitHub...</span>
+          <span className="ml-2 text-gray-900">Cargando pedidos desde GitHub...</span>
         </div>
       );
     }
@@ -893,13 +893,13 @@ const BramsStoreAdmin = () => {
                   <tr key={order.id} className="border-b">
                     <td className="py-2">
                       <div>
-                        <p className="font-mono font-semibold">{order.orderNumber}</p>
+                        <p className="font-mono font-semibold text-gray-900">{order.orderNumber}</p>
                         <p className="text-xs text-gray-500">{order.id}</p>
                       </div>
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold">{order.customer.fullName}</p>
+                        <p className="font-semibold text-gray-900">{order.customer.fullName}</p>
                         <p className="text-sm text-gray-600">{order.customer.email}</p>
                         <p className="text-xs text-gray-500">{order.customer.phone}</p>
                       </div>
@@ -908,7 +908,7 @@ const BramsStoreAdmin = () => {
                       <div className="space-y-1">
                         {order.items.map((item, index) => (
                           <div key={index} className="text-sm">
-                            <span className="font-medium">{item.name}</span>
+                            <span className="font-medium text-gray-900">{item.name}</span>
                             <span className="text-gray-500"> x{item.quantity}</span>
                           </div>
                         ))}
@@ -916,7 +916,7 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-bold">{formatPrice(order.pricing.total)}</p>
+                        <p className="font-bold text-gray-900">{formatPrice(order.pricing.total)}</p>
                         <p className="text-xs text-gray-500">
                           Ganancia: {formatPrice(order.pricing.totalProfit)}
                         </p>
@@ -934,7 +934,7 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="text-sm font-medium">{order.payment.methodName}</p>
+                        <p className="text-sm font-medium text-gray-900">{order.payment.methodName}</p>
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           order.payment.status === 'paid' ? 'bg-green-100 text-green-800' :
                           'bg-yellow-100 text-yellow-800'
@@ -944,7 +944,7 @@ const BramsStoreAdmin = () => {
                       </div>
                     </td>
                     <td className="py-2">
-                      <p className="text-sm">{new Date(order.timestamps.created).toLocaleDateString()}</p>
+                      <p className="text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</p>
                       <p className="text-xs text-gray-500">{new Date(order.timestamps.created).toLocaleTimeString()}</p>
                     </td>
                   </tr>
@@ -1319,7 +1319,7 @@ const BramsStoreAdmin = () => {
               <p className="text-xs text-gray-600">{roles.find(r => r.id === currentUser.role)?.name}</p>
               <div className="flex items-center mt-1">
                 <div className={`w-2 h-2 rounded-full mr-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span className="text-xs text-gray-500">{isOnline ? 'Conectado' : 'Sin conexión'}</span>
+                <span className="text-xs text-gray-600">{isOnline ? 'Conectado' : 'Sin conexión'}</span>
               </div>
             </div>
           )}
@@ -1388,7 +1388,7 @@ const BramsStoreAdmin = () => {
           <div className="mb-4 p-2 bg-gray-50 rounded-lg text-xs">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Última sync:</span>
-              <span className="text-gray-800">{formatTimeAgo(lastSync)}</span>
+              <span className="text-gray-900">{formatTimeAgo(lastSync)}</span>
             </div>
             <div className="flex items-center justify-between mt-1">
               <span className="text-gray-600">Estado:</span>
@@ -1396,7 +1396,7 @@ const BramsStoreAdmin = () => {
                 syncStatus === 'success' ? 'text-green-600' :
                 syncStatus === 'error' ? 'text-red-600' :
                 syncStatus === 'syncing' ? 'text-blue-600' :
-                'text-gray-600'
+                'text-gray-900'
               }`}>
                 {syncStatus === 'success' ? 'Sincronizado' :
                  syncStatus === 'error' ? 'Error' :
