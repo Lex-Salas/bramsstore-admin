@@ -1272,63 +1272,119 @@ const BramsStoreAdmin = () => {
   const EditUserModal = () => editingUser && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-4">Editar Usuario</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            value={editingUser.username}
-            onChange={(e) => setEditingUser(prev => ({ ...prev, username: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
-            placeholder="Usuario"
-            disabled={editingUser.id === 1}
-          />
-          <input
-            type="email"
-            value={editingUser.email}
-            onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
-            placeholder="Email"
-          />
-          <input
-            type="text"
-            value={editingUser.fullName}
-            onChange={(e) => setEditingUser(prev => ({ ...prev, fullName: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
-            placeholder="Nombre completo"
-          />
-          <select
-            value={editingUser.role}
-            onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
-            disabled={editingUser.id === 1}
-          >
-            {roles.map(role => (
-              <option key={role.id} value={role.id}>
-                {role.name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={editingUser.status}
-            onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
-            disabled={editingUser.id === 1}
-          >
-            <option value="active">Activo</option>
-            <option value="inactive">Inactivo</option>
-          </select>
+        <h3 className="text-lg font-bold mb-6">Editar Usuario</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre de Usuario
+              </label>
+              <input
+                type="text"
+                value={editingUser.username}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, username: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="usuario123"
+                disabled={editingUser.id === 1}
+              />
+              {editingUser.id === 1 && (
+                <p className="text-xs text-gray-500 mt-1">El super admin no se puede cambiar</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={editingUser.email}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="usuario@bramsstore.com"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre Completo
+              </label>
+              <input
+                type="text"
+                value={editingUser.fullName}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, fullName: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="Juan Pérez"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rol del Usuario
+              </label>
+              <select
+                value={editingUser.role}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                disabled={editingUser.id === 1}
+              >
+                {roles.map(role => (
+                  <option key={role.id} value={role.id}>
+                    {role.name} - {role.description}
+                  </option>
+                ))}
+              </select>
+              {editingUser.id === 1 && (
+                <p className="text-xs text-gray-500 mt-1">El super admin siempre mantiene todos los permisos</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estado
+              </label>
+              <select
+                value={editingUser.status}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                disabled={editingUser.id === 1}
+              >
+                <option value="active">✅ Activo - Puede acceder al sistema</option>
+                <option value="inactive">❌ Inactivo - Acceso bloqueado</option>
+              </select>
+              {editingUser.id === 1 && (
+                <p className="text-xs text-gray-500 mt-1">El super admin siempre está activo</p>
+              )}
+            </div>
+          </div>
+          
+          {/* Información actual del rol */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">Permisos del Rol Seleccionado:</h4>
+            <div className="text-sm text-blue-700">
+              {(() => {
+                const role = roles.find(r => r.id === editingUser.role);
+                if (role?.id === 'super_admin') return '🔓 Acceso completo a todo el sistema';
+                if (role?.id === 'admin') return '📦 Productos, Pedidos, Clientes, Reportes';
+                if (role?.id === 'editor') return '✏️ Solo edición de productos';
+                if (role?.id === 'viewer') return '👁️ Solo lectura del dashboard';
+                return 'Permisos limitados';
+              })()}
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2 mt-6">
+        
+        <div className="flex gap-3 mt-6">
           <button
             onClick={handleUpdateUser}
-            className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 flex items-center justify-center"
+            className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
           >
             <Save className="w-4 h-4 mr-2" />
-            Guardar
+            Guardar Cambios
           </button>
           <button
             onClick={() => setEditingUser(null)}
-            className="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
+            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
           >
             Cancelar
           </button>
