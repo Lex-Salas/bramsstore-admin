@@ -450,13 +450,7 @@ const BramsStoreAdmin = () => {
             </div>
           </form>
           
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 text-center">
-              <strong>Cuentas Demo:</strong><br />
-              <strong>Super Admin:</strong> admin / bramsstore2025<br />
-              <strong>Otros usuarios:</strong> carlos_manager / demo123
-            </p>
-          </div>
+
         </div>
       </div>
     );
