@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3b82f6" />
+  
+  <!-- SEO y Meta Tags -->
+  <meta name="description" content="Panel de administración profesional para BramsStore - Gestión de productos, pedidos e inventario" />
+  <meta name="keywords" content="BramsStore, admin, panel, gestión, productos, pedidos, inventario, e-commerce" />
+  <meta name="author" content="BramsStore Team" />
+  
+  <!-- Open Graph Meta Tags para redes sociales -->
+  <meta property="og:title" content="BramsStore Admin - Panel de Administración" />
+  <meta property="og:description" content="Panel de administración profesional para gestionar tu tienda online" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://admin.bramsstore.com" />
+  <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+  <meta property="og:site_name" content="BramsStore Admin" />
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BramsStore Admin - Panel de Administración" />
+  <meta name="twitter:description" content="Panel de administración profesional para gestionar tu tienda online" />
+  <meta name="twitter:image" content="%PUBLIC_URL%/twitter-image.png" />
+  
+  <!-- Apple Touch Icon y PWA -->
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  
+  <!-- Preconnect para optimización de rendimiento -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  
+  <!-- DNS Prefetch para recursos externos -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//images.unsplash.com" />
+  
+  <!-- Configuración de seguridad -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  
+  <!-- Título dinámico -->
+  <title>BramsStore Admin - Panel de Administración</title>
+  
+  <!-- Estilos inline críticos para performance -->
+  <style>
+    /* Critical CSS para evitar FOUC */
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #f3f4f6;
+      overflow-x: hidden;
+    }
+    
+    /* Loading spinner inicial */
+    .initial-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    .initial-loader.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loader-logo {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .loader-text {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .loader-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-top: 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Fallback para usuarios sin JavaScript */
+    .no-js-message {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1f2937;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      z-index: 10000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fallback para usuarios sin JavaScript -->
+  <noscript>
+    <div class="no-js-message">
+      <h1>BramsStore Admin requiere JavaScript</h1>
+      <p>Para usar este panel de administración, por favor habilita JavaScript en tu navegador.</p>
+    </div>
+  </noscript>
+  
+  <!-- Loading inicial profesional -->
+  <div id="initial-loader" class="initial-loader">
+    <div class="loader-logo">
+      🛒
+    </div>
+    <div class="loader-text">
+      <span style="color: #60a5fa;">Brams</span><span style="color: #fb923c;">Store</span>
+    </div>
+    <div class="loader-subtitle">Panel de Administración</div>
+    <div class="spinner"></div>
+  </div>
+  
+  <!-- Root de la aplicación React -->
+  <div id="root"></div>
+  
+  <!-- Script para ocultar loader cuando React esté listo -->
+  <script>
+    // Ocultar el loader cuando la aplicación esté cargada
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.classList.add('hide');
+          setTimeout(function() {
+            loader.style.display = 'none';
+          }, 500);
+        }
+      }, 1000);
+    });
+    
+    // Configuración de performance
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('SW registered: ', registration);
+          })
+          .catch(function(registrationError) {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+    
+    // Configuración de analytics (opcional)
+    window.bramsStoreAdmin = {
+      version: '1.0.0',
+      environment: 'production',
+      debug: false
+    };
+  </script>
+  
+  <!-- 
+    Este archivo HTML es el template principal para BramsStore Admin Panel
+    
+    Funcionalidades incluidas:
+    ✅ SEO optimizado
+    ✅ Meta tags para redes sociales
+    ✅ PWA ready
+    ✅ Performance optimizado
+    ✅ Loader profesional
+    ✅ Configuración de seguridad
+    ✅ Soporte para Service Workers
+    ✅ Responsive design
+    ✅ Accesibilidad mejorada
+  -->
+</body>
+</html>
