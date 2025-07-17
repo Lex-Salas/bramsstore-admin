@@ -174,18 +174,19 @@
       }, 1000);
     });
     
-    // Configuración de performance
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-          .then(function(registration) {
-            console.log('SW registered: ', registration);
-          })
-          .catch(function(registrationError) {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
+    // Configuración de performance (Service Worker desactivado)
+    // Para activar PWA en el futuro, crear archivo /public/sw.js
+    // if ('serviceWorker' in navigator && 'PushManager' in window) {
+    //   window.addEventListener('load', function() {
+    //     navigator.serviceWorker.register('/sw.js')
+    //       .then(function(registration) {
+    //         console.log('SW registered: ', registration);
+    //       })
+    //       .catch(function(registrationError) {
+    //         console.log('SW registration failed: ', registrationError);
+    //       });
+    //   });
+    // }
     
     // Configuración de analytics (opcional)
     window.bramsStoreAdmin = {
