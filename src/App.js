@@ -430,7 +430,7 @@ const BramsStoreAdmin = () => {
                 placeholder="Usuario"
                 value={loginForm.username}
                 onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 required
               />
               <input
@@ -438,7 +438,7 @@ const BramsStoreAdmin = () => {
                 placeholder="Contraseña"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 required
               />
               <button
@@ -596,19 +596,19 @@ const BramsStoreAdmin = () => {
               placeholder="Nombre del producto"
               value={newProduct.name}
               onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             />
             <input
               type="text"
               placeholder="SKU"
               value={newProduct.sku}
               onChange={(e) => setNewProduct(prev => ({ ...prev, sku: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             />
             <select
               value={newProduct.category}
               onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               {categories.map(category => (
                 <option key={category.id} value={category.id}>
@@ -621,34 +621,34 @@ const BramsStoreAdmin = () => {
               placeholder="Precio de venta"
               value={newProduct.price}
               onChange={(e) => setNewProduct(prev => ({ ...prev, price: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             />
             <input
               type="number"
               placeholder="Costo"
               value={newProduct.cost}
               onChange={(e) => setNewProduct(prev => ({ ...prev, cost: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             />
             <input
               type="number"
               placeholder="Stock"
               value={newProduct.stock}
               onChange={(e) => setNewProduct(prev => ({ ...prev, stock: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             />
             <input
               type="url"
               placeholder="URL de imagen"
               value={newProduct.image}
               onChange={(e) => setNewProduct(prev => ({ ...prev, image: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             />
             <textarea
               placeholder="Descripción"
               value={newProduct.description}
               onChange={(e) => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
-              className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-20 resize-none"
+              className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-20 resize-none text-gray-900 placeholder-gray-500"
             />
           </div>
           <div className="mt-4 flex items-center gap-4">
@@ -876,7 +876,7 @@ const BramsStoreAdmin = () => {
                       type="text"
                       value={storeConfig.storeName}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     />
                   </div>
                   <div>
@@ -885,7 +885,7 @@ const BramsStoreAdmin = () => {
                       type="email"
                       value={storeConfig.email}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, email: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     />
                   </div>
                   <div>
@@ -894,7 +894,7 @@ const BramsStoreAdmin = () => {
                       type="tel"
                       value={storeConfig.phone}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     />
                   </div>
                   <div>
@@ -903,7 +903,7 @@ const BramsStoreAdmin = () => {
                       type="text"
                       value={storeConfig.address}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, address: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -911,7 +911,7 @@ const BramsStoreAdmin = () => {
                     <textarea
                       value={storeConfig.storeDescription}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, storeDescription: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-20 resize-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-20 resize-none text-gray-900"
                     />
                   </div>
                 </div>
@@ -938,33 +938,33 @@ const BramsStoreAdmin = () => {
                       placeholder="Nombre de usuario"
                       value={newUser.username}
                       onChange={(e) => setNewUser(prev => ({ ...prev, username: e.target.value }))}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                     />
                     <input
                       type="email"
                       placeholder="Email"
                       value={newUser.email}
                       onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                     />
                     <input
                       type="text"
                       placeholder="Nombre completo"
                       value={newUser.fullName}
                       onChange={(e) => setNewUser(prev => ({ ...prev, fullName: e.target.value }))}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                     />
                     <input
                       type="password"
                       placeholder="Contraseña"
                       value={newUser.password}
                       onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                     />
                     <select
                       value={newUser.role}
                       onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value }))}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     >
                       {roles.map(role => (
                         <option key={role.id} value={role.id}>
@@ -1193,48 +1193,48 @@ const BramsStoreAdmin = () => {
             type="text"
             value={editingProduct.name}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, name: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
+            className="px-4 py-2 border rounded-lg text-gray-900"
             placeholder="Nombre"
           />
           <input
             type="text"
             value={editingProduct.sku}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, sku: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
+            className="px-4 py-2 border rounded-lg text-gray-900"
             placeholder="SKU"
           />
           <input
             type="number"
             value={editingProduct.price}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))}
-            className="px-4 py-2 border rounded-lg"
+            className="px-4 py-2 border rounded-lg text-gray-900"
             placeholder="Precio"
           />
           <input
             type="number"
             value={editingProduct.cost}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, cost: parseInt(e.target.value) || 0 }))}
-            className="px-4 py-2 border rounded-lg"
+            className="px-4 py-2 border rounded-lg text-gray-900"
             placeholder="Costo"
           />
           <input
             type="number"
             value={editingProduct.stock}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
-            className="px-4 py-2 border rounded-lg"
+            className="px-4 py-2 border rounded-lg text-gray-900"
             placeholder="Stock"
           />
           <input
             type="url"
             value={editingProduct.image}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, image: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
+            className="px-4 py-2 border rounded-lg text-gray-900"
             placeholder="URL de imagen"
           />
           <textarea
             value={editingProduct.description}
             onChange={(e) => setEditingProduct(prev => ({ ...prev, description: e.target.value }))}
-            className="md:col-span-2 px-4 py-2 border rounded-lg h-20 resize-none"
+            className="md:col-span-2 px-4 py-2 border rounded-lg h-20 resize-none text-gray-900"
             placeholder="Descripción"
           />
         </div>
@@ -1283,7 +1283,7 @@ const BramsStoreAdmin = () => {
                 type="text"
                 value={editingUser.username}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="usuario123"
                 disabled={editingUser.id === 1}
               />
@@ -1300,7 +1300,7 @@ const BramsStoreAdmin = () => {
                 type="email"
                 value={editingUser.email}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="usuario@bramsstore.com"
               />
             </div>
@@ -1313,7 +1313,7 @@ const BramsStoreAdmin = () => {
                 type="text"
                 value={editingUser.fullName}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, fullName: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Juan Pérez"
               />
             </div>
@@ -1325,7 +1325,7 @@ const BramsStoreAdmin = () => {
               <select
                 value={editingUser.role}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 disabled={editingUser.id === 1}
               >
                 {roles.map(role => (
@@ -1346,7 +1346,7 @@ const BramsStoreAdmin = () => {
               <select
                 value={editingUser.status}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 disabled={editingUser.id === 1}
               >
                 <option value="active">✅ Activo - Puede acceder al sistema</option>
