@@ -1,10 +1,4 @@
-<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.paypal.enabled && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
+<div>
                         <label className="block text-sm font-medium text-green-700 mb-2">Email PayPal</label>
                         <input
                           type="email"
@@ -16,580 +10,7 @@
                               paypal: { ...prev.paymentMethods.paypal, email: e.target.value }
                             }
                           }))}
-                          className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
-                          placeholder="pagos@bramsstore.com"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-green-700 mb-2">Link PayPal.me</label>
-                        <input
-                          type="url"
-                          value={storeConfig.paymentMethods.paypal.link}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              paypal: { ...prev.paymentMethods.paypal, link: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
-                          placeholder="https://paypal.me/bramsstore"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Tarjetas */}
-                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-purple-800 flex items-center">
-                      <CreditCard className="w-5 h-5 mr-2" />
-                      Tarjetas de Crédito/Débito
-                    </h4>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={storeConfig.paymentMethods.cards.enabled}
-                        onChange={(e) => setStoreConfig(prev => ({
-                          ...prev,
-                          paymentMethods: {
-                            ...prev.paymentMethods,
-                            cards: { ...prev.paymentMethods.cards, enabled: e.target.checked }
-                          }
-                        }))}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.cards.enabled && (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-purple-700 mb-2">Procesador</label>
                         <select
-                          value={storeConfig.paymentMethods.cards.processor}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              cards: { ...prev.paymentMethods.cards, processor: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
-                        >
-                          <option value="Stripe">Stripe</option>
-                          <option value="Square">Square</option>
-                          <option value="PayPal">PayPal</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-purple-700 mb-2">Tipos Aceptados</label>
-                        <div className="flex flex-wrap gap-2">
-                          {['Visa', 'Mastercard', 'American Express', 'Diners'].map(card => (
-                            <label key={card} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                checked={storeConfig.paymentMethods.cards.types.includes(card)}
-                                onChange={(e) => {
-                                  const types = e.target.checked
-                                    ? [...storeConfig.paymentMethods.cards.types, card]
-                                    : storeConfig.paymentMethods.cards.types.filter(t => t !== card);
-                                  setStoreConfig(prev => ({
-                                    ...prev,
-                                    paymentMethods: {
-                                      ...prev.paymentMethods,
-                                      cards: { ...prev.paymentMethods.cards, types }
-                                    }
-                                  }));
-                                }}
-                                className="mr-2"
-                              />
-                              <span className="text-sm text-purple-700">{card}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Transferencia Bancaria */}
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-yellow-800 flex items-center">
-                      <User className="w-5 h-5 mr-2" />
-                      Transferencia Bancaria
-                    </h4>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={storeConfig.paymentMethods.bankTransfer.enabled}
-                        onChange={(e) => setStoreConfig(prev => ({
-                          ...prev,
-                          paymentMethods: {
-                            ...prev.paymentMethods,
-                            bankTransfer: { ...prev.paymentMethods.bankTransfer, enabled: e.target.checked }
-                          }
-                        }))}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.bankTransfer.enabled && (
-                    <div className="space-y-4">
-                      {storeConfig.paymentMethods.bankTransfer.accounts.map((account, index) => (
-                        <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-white rounded border">
-                          <div>
-                            <label className="block text-sm font-medium text-yellow-700 mb-1">Banco</label>
-                            <input
-                              type="text"
-                              value={account.bank}
-                              onChange={(e) => {
-                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
-                                accounts[index] = { ...accounts[index], bank: e.target.value };
-                                setStoreConfig(prev => ({
-                                  ...prev,
-                                  paymentMethods: {
-                                    ...prev.paymentMethods,
-                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
-                                  }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
-                              placeholder="BAC"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-yellow-700 mb-1">IBAN</label>
-                            <input
-                              type="text"
-                              value={account.iban}
-                              onChange={(e) => {
-                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
-                                accounts[index] = { ...accounts[index], iban: e.target.value };
-                                setStoreConfig(prev => ({
-                                  ...prev,
-                                  paymentMethods: {
-                                    ...prev.paymentMethods,
-                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
-                                  }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
-                              placeholder="CR12345678901234567890"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-yellow-700 mb-1">Cuenta</label>
-                            <input
-                              type="text"
-                              value={account.account}
-                              onChange={(e) => {
-                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
-                                accounts[index] = { ...accounts[index], account: e.target.value };
-                                setStoreConfig(prev => ({
-                                  ...prev,
-                                  paymentMethods: {
-                                    ...prev.paymentMethods,
-                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
-                                  }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
-                              placeholder="123456789"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* ✅ Tab de Seguridad MEJORADO */}
-            {configTab === 'security' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Configuración de Seguridad Enterprise</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Tokens de API */}
-                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                    <h4 className="font-semibold text-red-800 mb-4 flex items-center">
-                      <Key className="w-5 h-5 mr-2" />
-                      Tokens de API
-                    </h4>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-red-700 mb-2">GitHub Token</label>
-                        <input
-                          type="password"
-                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
-                        />
-                        <p className="text-xs text-red-600 mt-1">Para actualizaciones automáticas de productos</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-red-700 mb-2">PayPal API Key</label>
-                        <input
-                          type="password"
-                          placeholder="sk_live_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Configuraciones de seguridad */}
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
-                      <Shield className="w-5 h-5 mr-2" />
-                      Configuraciones de Seguridad
-                    </h4>
-                    <div className="space-y-3">
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Autenticación de dos factores</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Logs de actividad detallados</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Backup automático diario</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" />
-                        <span className="text-sm text-gray-700">Bloqueo de IP sospechosas</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Estado del sistema */}
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-green-800 mb-4">Estado del Sistema de Seguridad</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="flex items-center p-3 bg-white rounded border">
-                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-green-800">SSL Activo</p>
-                        <p className="text-sm text-green-600">Certificado válido</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center p-3 bg-white rounded border">
-                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-green-800">Firewall Activo</p>
-                        <p className="text-sm text-green-600">Protección completa</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center p-3 bg-white rounded border">
-                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-green-800">Backups OK</p>
-                        <p className="text-sm text-green-600">Último: Hoy</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Tab de Usuarios (igual que antes) */}
-            {configTab === 'users' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold text-gray-800">Gestión de Usuarios</h3>
-                  <button 
-                    onClick={() => setEditingUser({ username: '', email: '', fullName: '', role: 'editor', status: 'active' })}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
-                  >
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Nuevo Usuario
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Usuario</th>
-                        <th className="text-left py-2">Email</th>
-                        <th className="text-left py-2">Rol</th>
-                        <th className="text-left py-2">Estado</th>
-                        <th className="text-left py-2">Último Acceso</th>
-                        <th className="text-left py-2">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map(user => {
-                        const userRole = roles.find(r => r.id === user.role);
-                        const RoleIcon = userRole?.icon || User;
-                        return (
-                          <tr key={user.id} className="border-b">
-                            <td className="py-2">
-                              <div className="flex items-center space-x-3">
-                                <div className={`w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ${userRole?.color}`}>
-                                  <RoleIcon className="w-4 h-4" />
-                                </div>
-                                <div>
-                                  <p className="font-semibold">{user.fullName}</p>
-                                  <p className="text-sm text-gray-600">@{user.username}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="py-2">{user.email}</td>
-                            <td className="py-2">
-                              <span className={`px-2 py-1 rounded-full text-xs ${userRole?.color} bg-opacity-10`}>
-                                {userRole?.name}
-                              </span>
-                            </td>
-                            <td className="py-2">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                              }`}>
-                                {user.status === 'active' ? 'Activo' : 'Inactivo'}
-                              </span>
-                            </td>
-                            <td className="py-2">{user.lastLogin}</td>
-                            <td className="py-2">
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => handleEditUser(user)}
-                                  className="text-blue-500 hover:text-blue-700"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </button>
-                                {user.id !== 1 && (
-                                  <button
-                                    onClick={() => handleDeleteUser(user.id)}
-                                    className="text-red-500 hover:text-red-700"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* Tab de Notificaciones */}
-            {configTab === 'notifications' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Sistema de Notificaciones Enterprise</h3>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                    <span className="text-green-800">Notificaciones en tiempo real activas desde GitHub</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ✅ NUEVO: Modal de nuevo producto
-  const NewProductModal = () => showNewProductModal && (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-6">Agregar Nuevo Producto</h3>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre del Producto *
-              </label>
-              <input
-                type="text"
-                value={newProduct.name}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="iPhone 15 Pro Max"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                SKU *
-              </label>
-              <input
-                type="text"
-                value={newProduct.sku}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="IP15P-256"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Categoría
-              </label>
-              <select
-                value={newProduct.category}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Precio de Venta (₡) *
-              </label>
-              <input
-                type="number"
-                value={newProduct.price}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, price: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="650000"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Costo (₡)
-              </label>
-              <input
-                type="number"
-                value={newProduct.cost}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, cost: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="500000"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Stock Inicial
-              </label>
-              <input
-                type="number"
-                value={newProduct.stock}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, stock: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="10"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Descripción
-            </label>
-            <textarea
-              value={newProduct.description}
-              onChange={(e) => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              rows="3"
-              placeholder="Describe las características principales del producto..."
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL de Imagen
-            </label>
-            <input
-              type="url"
-              value={newProduct.image}
-              onChange={(e) => setNewProduct(prev => ({ ...prev, image: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="https://images.unsplash.com/..."
-            />
-          </div>
-          
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="featured"
-              checked={newProduct.featured}
-              onChange={(e) => setNewProduct(prev => ({ ...prev, featured: e.target.checked }))}
-              className="mr-2"
-            />
-            <label htmlFor="featured" className="text-sm text-gray-700">
-              ⭐ Producto destacado (aparecerá en la página principal)
-            </label>
-          </div>
-        </div>
-        
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={handleAddProduct}
-            className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Crear Producto
-          </button>
-          <button
-            onClick={() => setShowNewProductModal(false)}
-            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Modal de edición de usuario (igual que antes)
-  const EditUserModal = () => editingUser && (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-6">Editar Usuario</h3>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre de Usuario
-              </label>
-              <input
-                type="text"
-                value={editingUser.username}
-                onChange={(e) => setEditingUser(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                disabled={editingUser.id === 1}
-              >
-                {roles.map(role => (
-                  <option key={role.id} value={role.id}>
-                    {role.name} - {role.description}
-                  </option>
-                ))}
-              </select>
-              {editingUser.id === 1 && (
-                <p className="text-xs text-gray-500 mt-1">El super admin siempre mantiene todos los permisos</p>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Estado
-              </label>
-              <select
                 value={editingUser.status}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
@@ -789,14 +210,569 @@
         {currentSection === 'settings' && <SettingsView />}
       </div>
 
-      {/* ✅ MODALES */}
+      {/* Modales */}
       <EditUserModal />
       <NewProductModal />
     </div>
   );
 };
 
-export default BramsStoreAdmin;900"
+export default BramsStoreAdmin;green-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
+                          placeholder="pagos@bramsstore.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">Link PayPal.me</label>
+                        <input
+                          type="url"
+                          value={storeConfig.paymentMethods.paypal.link}
+                          onChange={(e) => setStoreConfig(prev => ({
+                            ...prev,
+                            paymentMethods: {
+                              ...prev.paymentMethods,
+                              paypal: { ...prev.paymentMethods.paypal, link: e.target.value }
+                            }
+                          }))}
+                          className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
+                          placeholder="https://paypal.me/bramsstore"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Tarjetas */}
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-purple-800 flex items-center">
+                      <CreditCard className="w-5 h-5 mr-2" />
+                      Tarjetas de Crédito/Débito
+                    </h4>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={storeConfig.paymentMethods.cards.enabled}
+                        onChange={(e) => setStoreConfig(prev => ({
+                          ...prev,
+                          paymentMethods: {
+                            ...prev.paymentMethods,
+                            cards: { ...prev.paymentMethods.cards, enabled: e.target.checked }
+                          }
+                        }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    </label>
+                  </div>
+                  
+                  {storeConfig.paymentMethods.cards.enabled && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-purple-700 mb-2">Procesador</label>
+                        <select
+                          value={storeConfig.paymentMethods.cards.processor}
+                          onChange={(e) => setStoreConfig(prev => ({
+                            ...prev,
+                            paymentMethods: {
+                              ...prev.paymentMethods,
+                              cards: { ...prev.paymentMethods.cards, processor: e.target.value }
+                            }
+                          }))}
+                          className="w-full px-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
+                        >
+                          <option value="Stripe">Stripe</option>
+                          <option value="Square">Square</option>
+                          <option value="PayPal">PayPal</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-purple-700 mb-2">Tipos Aceptados</label>
+                        <div className="flex flex-wrap gap-2">
+                          {['Visa', 'Mastercard', 'American Express', 'Diners'].map(card => (
+                            <label key={card} className="flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={storeConfig.paymentMethods.cards.types.includes(card)}
+                                onChange={(e) => {
+                                  const types = e.target.checked
+                                    ? [...storeConfig.paymentMethods.cards.types, card]
+                                    : storeConfig.paymentMethods.cards.types.filter(t => t !== card);
+                                  setStoreConfig(prev => ({
+                                    ...prev,
+                                    paymentMethods: {
+                                      ...prev.paymentMethods,
+                                      cards: { ...prev.paymentMethods.cards, types }
+                                    }
+                                  }));
+                                }}
+                                className="mr-2"
+                              />
+                              <span className="text-sm text-purple-700">{card}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Transferencia Bancaria */}
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-yellow-800 flex items-center">
+                      <User className="w-5 h-5 mr-2" />
+                      Transferencia Bancaria
+                    </h4>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={storeConfig.paymentMethods.bankTransfer.enabled}
+                        onChange={(e) => setStoreConfig(prev => ({
+                          ...prev,
+                          paymentMethods: {
+                            ...prev.paymentMethods,
+                            bankTransfer: { ...prev.paymentMethods.bankTransfer, enabled: e.target.checked }
+                          }
+                        }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    </label>
+                  </div>
+                  
+                  {storeConfig.paymentMethods.bankTransfer.enabled && (
+                    <div className="space-y-4">
+                      {storeConfig.paymentMethods.bankTransfer.accounts.map((account, index) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-white rounded border">
+                          <div>
+                            <label className="block text-sm font-medium text-yellow-700 mb-1">Banco</label>
+                            <input
+                              type="text"
+                              value={account.bank}
+                              onChange={(e) => {
+                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
+                                accounts[index] = { ...accounts[index], bank: e.target.value };
+                                setStoreConfig(prev => ({
+                                  ...prev,
+                                  paymentMethods: {
+                                    ...prev.paymentMethods,
+                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
+                                  }
+                                }));
+                              }}
+                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
+                              placeholder="BAC"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-yellow-700 mb-1">IBAN</label>
+                            <input
+                              type="text"
+                              value={account.iban}
+                              onChange={(e) => {
+                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
+                                accounts[index] = { ...accounts[index], iban: e.target.value };
+                                setStoreConfig(prev => ({
+                                  ...prev,
+                                  paymentMethods: {
+                                    ...prev.paymentMethods,
+                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
+                                  }
+                                }));
+                              }}
+                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
+                              placeholder="CR12345678901234567890"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-yellow-700 mb-1">Cuenta</label>
+                            <input
+                              type="text"
+                              value={account.account}
+                              onChange={(e) => {
+                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
+                                accounts[index] = { ...accounts[index], account: e.target.value };
+                                setStoreConfig(prev => ({
+                                  ...prev,
+                                  paymentMethods: {
+                                    ...prev.paymentMethods,
+                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
+                                  }
+                                }));
+                              }}
+                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
+                              placeholder="123456789"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tab de Seguridad */}
+            {configTab === 'security' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-gray-800">Configuración de Seguridad Enterprise</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Tokens de API */}
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h4 className="font-semibold text-red-800 mb-4 flex items-center">
+                      <Key className="w-5 h-5 mr-2" />
+                      Tokens de API
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-red-700 mb-2">GitHub Token</label>
+                        <input
+                          type="password"
+                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
+                        />
+                        <p className="text-xs text-red-600 mt-1">Para actualizaciones automáticas de productos</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-red-700 mb-2">PayPal API Key</label>
+                        <input
+                          type="password"
+                          placeholder="sk_live_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Configuraciones de seguridad */}
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
+                      <Shield className="w-5 h-5 mr-2" />
+                      Configuraciones de Seguridad
+                    </h4>
+                    <div className="space-y-3">
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" defaultChecked />
+                        <span className="text-sm text-gray-700">Autenticación de dos factores</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" defaultChecked />
+                        <span className="text-sm text-gray-700">Logs de actividad detallados</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" defaultChecked />
+                        <span className="text-sm text-gray-700">Backup automático diario</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" />
+                        <span className="text-sm text-gray-700">Bloqueo de IP sospechosas</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Estado del sistema */}
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-green-800 mb-4">Estado del Sistema de Seguridad</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex items-center p-3 bg-white rounded border">
+                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-green-800">SSL Activo</p>
+                        <p className="text-sm text-green-600">Certificado válido</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center p-3 bg-white rounded border">
+                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-green-800">Firewall Activo</p>
+                        <p className="text-sm text-green-600">Protección completa</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center p-3 bg-white rounded border">
+                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-green-800">Backups OK</p>
+                        <p className="text-sm text-green-600">Último: Hoy</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab de Usuarios */}
+            {configTab === 'users' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-bold text-gray-800">Gestión de Usuarios</h3>
+                  <button 
+                    onClick={() => setEditingUser({ username: '', email: '', fullName: '', role: 'editor', status: 'active' })}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Nuevo Usuario
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2">Usuario</th>
+                        <th className="text-left py-2">Email</th>
+                        <th className="text-left py-2">Rol</th>
+                        <th className="text-left py-2">Estado</th>
+                        <th className="text-left py-2">Último Acceso</th>
+                        <th className="text-left py-2">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map(user => {
+                        const userRole = roles.find(r => r.id === user.role);
+                        const RoleIcon = userRole?.icon || User;
+                        return (
+                          <tr key={user.id} className="border-b">
+                            <td className="py-2">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ${userRole?.color}`}>
+                                  <RoleIcon className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold">{user.fullName}</p>
+                                  <p className="text-sm text-gray-600">@{user.username}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-2">{user.email}</td>
+                            <td className="py-2">
+                              <span className={`px-2 py-1 rounded-full text-xs ${userRole?.color} bg-opacity-10`}>
+                                {userRole?.name}
+                              </span>
+                            </td>
+                            <td className="py-2">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              }`}>
+                                {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                              </span>
+                            </td>
+                            <td className="py-2">{user.lastLogin}</td>
+                            <td className="py-2">
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleEditUser(user)}
+                                  className="text-blue-500 hover:text-blue-700"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                                {user.id !== 1 && (
+                                  <button
+                                    onClick={() => handleDeleteUser(user.id)}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Tab de Notificaciones */}
+            {configTab === 'notifications' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-gray-800">Sistema de Notificaciones Enterprise</h3>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                    <span className="text-green-800">Notificaciones en tiempo real activas desde GitHub</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Modal de nuevo producto
+  const NewProductModal = () => showNewProductModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold mb-6">Agregar Nuevo Producto</h3>
+        
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre del Producto *
+              </label>
+              <input
+                type="text"
+                value={newProduct.name}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="iPhone 15 Pro Max"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                SKU *
+              </label>
+              <input
+                type="text"
+                value={newProduct.sku}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="IP15P-256"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Categoría
+              </label>
+              <select
+                value={newProduct.category}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Precio de Venta (₡) *
+              </label>
+              <input
+                type="number"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, price: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="650000"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Costo (₡)
+              </label>
+              <input
+                type="number"
+                value={newProduct.cost}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, cost: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="500000"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stock Inicial
+              </label>
+              <input
+                type="number"
+                value={newProduct.stock}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, stock: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="10"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Descripción
+            </label>
+            <textarea
+              value={newProduct.description}
+              onChange={(e) => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              rows="3"
+              placeholder="Describe las características principales del producto..."
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              URL de Imagen
+            </label>
+            <input
+              type="url"
+              value={newProduct.image}
+              onChange={(e) => setNewProduct(prev => ({ ...prev, image: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="https://images.unsplash.com/..."
+            />
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={newProduct.featured}
+              onChange={(e) => setNewProduct(prev => ({ ...prev, featured: e.target.checked }))}
+              className="mr-2"
+            />
+            <label htmlFor="featured" className="text-sm text-gray-700">
+              ⭐ Producto destacado (aparecerá en la página principal)
+            </label>
+          </div>
+        </div>
+        
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={handleAddProduct}
+            className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Crear Producto
+          </button>
+          <button
+            onClick={() => setShowNewProductModal(false)}
+            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Modal de edición de usuario
+  const EditUserModal = () => editingUser && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold mb-6">Editar Usuario</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre de Usuario
+              </label>
+              <input
+                type="text"
+                value={editingUser.username}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, username: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="usuario123"
                 disabled={editingUser.id === 1}
               />
@@ -838,21 +814,28 @@ export default BramsStoreAdmin;900"
               <select
                 value={editingUser.role}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-                      <td className="py-2">
-                        <span className="inline-flex items-center text-gray-900">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                          Enterprise
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                disabled={editingUser.id === 1}
+              >
+                {roles.map(role => (
+                  <option key={role.id} value={role.id}>
+                    {role.name} - {role.description}
+                  </option>
+                ))}
+              </select>
+              {editingUser.id === 1 && (
+                <p className="text-xs text-gray-500 mt-1">El super admin siempre mantiene todos los permisos</p>
+              )}
             </div>
-          </div>
-        )}
-
-        {/* Productos más vendidos */}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estado
+              </label>
+              <select
+                value={editingUser.status}
+                onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
+                className="w-full px-4 py-2 border border-        {/* Productos más vendidos */}
         <div className="bg-white p-6 rounded-xl shadow-lg">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
           <div className="space-y-4">
@@ -942,7 +925,6 @@ export default BramsStoreAdmin;900"
               <RefreshCw className="w-4 h-4 mr-2" />
               Sync GitHub
             </button>
-            {/* ✅ BOTÓN ARREGLADO */}
             <button 
               onClick={() => setShowNewProductModal(true)}
               className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
@@ -1179,7 +1161,7 @@ export default BramsStoreAdmin;900"
           </div>
         </div>
 
-        {/* Tabs de configuración MEJORADOS */}
+        {/* Tabs de configuración */}
         <div className="bg-white rounded-xl shadow-lg">
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6">
@@ -1210,7 +1192,7 @@ export default BramsStoreAdmin;900"
           </div>
 
           <div className="p-6">
-            {/* ✅ Tab de Tienda MEJORADO */}
+            {/* Tab de Tienda */}
             {configTab === 'store' && (
               <div className="space-y-6">
                 <h3 className="text-lg font-bold text-gray-800">Configuración de la Tienda Enterprise</h3>
@@ -1324,7 +1306,7 @@ export default BramsStoreAdmin;900"
               </div>
             )}
 
-            {/* ✅ Tab de Pagos MEJORADO */}
+            {/* Tab de Pagos */}
             {configTab === 'payments' && (
               <div className="space-y-6">
                 <h3 className="text-lg font-bold text-gray-800">Métodos de Pago Enterprise</h3>
@@ -1427,7 +1409,14 @@ export default BramsStoreAdmin;900"
                         }))}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2import React, { useState, useEffect, useCallback } from 'react';
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                  </div>
+                  
+                  {storeConfig.paymentMethods.paypal.enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BarChart3, 
   Package, 
@@ -1530,7 +1519,7 @@ const BramsStoreAdmin = () => {
     }
   ]);
 
-  // ✅ NUEVO: Estado para nuevo producto
+  // Estado para nuevo producto
   const [showNewProductModal, setShowNewProductModal] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -1591,7 +1580,7 @@ const BramsStoreAdmin = () => {
       weeklyReports: true
     },
     
-    // ✅ NUEVO: Métodos de pago expandidos
+    // Métodos de pago expandidos
     paymentMethods: {
       sinpe: {
         enabled: true,
@@ -1867,7 +1856,7 @@ const BramsStoreAdmin = () => {
     }
   };
 
-  // ✅ NUEVO: Función para agregar producto
+  // Función para agregar producto
   const handleAddProduct = () => {
     if (!newProduct.name || !newProduct.price || !newProduct.sku) {
       addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
@@ -1932,28 +1921,6 @@ const BramsStoreAdmin = () => {
   };
 
   // Funciones de usuarios
-  const handleAddUser = () => {
-    if (newUser.username && newUser.email && newUser.password) {
-      const user = {
-        ...newUser,
-        id: Math.max(...users.map(u => u.id)) + 1,
-        status: 'active',
-        lastLogin: 'Nunca',
-        permissions: roles.find(r => r.id === newUser.role)?.permissions || []
-      };
-      setUsers(prev => [...prev, user]);
-      setNewUser({
-        username: '',
-        email: '',
-        fullName: '',
-        password: '',
-        role: 'editor',
-        permissions: []
-      });
-      addNotification('success', 'Usuario agregado exitosamente');
-    }
-  };
-
   const handleEditUser = (user) => {
     setEditingUser({ ...user });
   };
@@ -2185,4 +2152,22 @@ const BramsStoreAdmin = () => {
                         </span>
                       </td>
                       <td className="py-2 text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</td>
-                      <td className="py
+                      <td className="py-2">
+                        <span className="inline-flex items-center text-gray-900">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                          Enterprise
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Productos más vendidos */}
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
+          <div className="space-y-4">
+            {products.products?.sort((a, b) => b.sales.totalSold - a.sales.total
