@@ -1,18 +1,46 @@
-<div>
-                        <label className="block text-sm font-medium text-green-700 mb-2">Email PayPal</label>
-                        <input
-                          type="email"
-                          value={storeConfig.paymentMethods.paypal.email}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              paypal: { ...prev.paymentMethods.paypal, email: e.target.value }
-                            }
-                          }))}
-                        <select
-                value={editingUser.status}
-                onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  BarChart3, 
+  Package, 
+  ShoppingCart, 
+  Users, 
+  Settings, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  DollarSign, 
+  TrendingUp,
+  LogOut,
+  Upload,
+  Save,
+  Search,
+  Filter,
+  Download,
+  User,
+  Shield,
+  Bell,
+  CreditCard,
+  Store,
+  Key,
+  UserPlus,
+  Crown,
+  EyeOff,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Loader,
+  Phone,
+  Mail,
+  MapPin,
+  Globe,
+  Facebook,
+  Instagram,
+  MessageCircle
+} from 'lucide-react';
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                 disabled={editingUser.id === 1}
               >
