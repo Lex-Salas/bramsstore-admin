@@ -196,7 +196,6 @@ const BramsStoreAdmin = () => {
   });
 
   // Estados para formularios
-  const [editingProduct, setEditingProduct] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [configTab, setConfigTab] = useState('store');
 
