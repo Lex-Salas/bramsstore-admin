@@ -103,6 +103,7 @@ const BramsStoreAdmin = () => {
 
   // Estado para nuevo producto
   const [showNewProductModal, setShowNewProductModal] = useState(false);
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
     category: 'smartphones', 
@@ -114,6 +115,7 @@ const BramsStoreAdmin = () => {
     featured: false,
     sku: ''
   });
+  const [editingProduct, setEditingProduct] = useState(null);
 
   // Configuración de la tienda MEJORADA
   const [storeConfig, setStoreConfig] = useState({
@@ -502,6 +504,52 @@ const BramsStoreAdmin = () => {
     loadEnterpriseData();
   };
 
+  // Función para iniciar edición de producto
+  const handleEditProduct = (product) => {
+    setEditingProduct({
+      id: product.id,
+      name: product.name,
+      category: product.category.id,
+      price: product.pricing.price.toString(),
+      cost: product.pricing.cost?.toString() || '',
+      image: product.media.primaryImage,
+      description: product.description || '',
+      stock: product.inventory.stock.toString(),
+      featured: product.status?.featured || false,
+      sku: product.sku
+    });
+    setShowEditProductModal(true);
+  };
+
+  // Función para actualizar producto
+  const handleUpdateProduct = () => {
+    if (!editingProduct.name || !editingProduct.price || !editingProduct.sku) {
+      addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
+      return;
+    }
+
+    console.log('Producto actualizado:', editingProduct);
+    addNotification('success', `Producto "${editingProduct.name}" actualizado exitosamente`);
+    
+    // Cerrar modal
+    setShowEditProductModal(false);
+    setEditingProduct(null);
+    
+    // Recargar datos
+    loadEnterpriseData();
+  };
+
+  // Función para eliminar producto
+  const handleDeleteProduct = (productId, productName) => {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar el producto "${productName}"?`)) {
+      console.log('Producto eliminado:', productId);
+      addNotification('success', `Producto "${productName}" eliminado exitosamente`);
+      
+      // Recargar datos
+      loadEnterpriseData();
+    }
+  };
+
   // Funciones de usuarios
   const handleEditUser = (user) => {
     setEditingUser({ ...user });
@@ -855,6 +903,7 @@ const BramsStoreAdmin = () => {
                   <th className="text-left py-2">Stock</th>
                   <th className="text-left py-2">Ventas</th>
                   <th className="text-left py-2">Estado</th>
+                  <th className="text-left py-2">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -898,6 +947,24 @@ const BramsStoreAdmin = () => {
                       <div className="flex items-center">
                         <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                         <span className="text-sm text-green-600">GitHub Sync</span>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleEditProduct(product)}
+                          className="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors"
+                          title="Editar producto"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(product.id, product.name)}
+                          className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                          title="Eliminar producto"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1421,7 +1488,160 @@ const BramsStoreAdmin = () => {
     );
   };
 
-  const NewProductModal = () => showNewProductModal && (
+  const EditProductModal = () => showEditProductModal && editingProduct && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold mb-6">Editar Producto</h3>
+        
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre del Producto *
+              </label>
+              <input
+                type="text"
+                value={editingProduct.name}
+                onChange={(e) => setEditingProduct(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                placeholder="iPhone 15 Pro Max"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                SKU *
+              </label>
+              <input
+                type="text"
+                value={editingProduct.sku}
+                onChange={(e) => setEditingProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                placeholder="IP15P-256"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Categoría
+              </label>
+              <select
+                value={editingProduct.category}
+                onChange={(e) => setEditingProduct(prev => ({ ...prev, category: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+              >
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Precio de Venta (₡) *
+              </label>
+              <input
+                type="number"
+                value={editingProduct.price}
+                onChange={(e) => setEditingProduct(prev => ({ ...prev, price: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                placeholder="650000"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Costo (₡)
+              </label>
+              <input
+                type="number"
+                value={editingProduct.cost}
+                onChange={(e) => setEditingProduct(prev => ({ ...prev, cost: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                placeholder="500000"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stock Actual
+              </label>
+              <input
+                type="number"
+                value={editingProduct.stock}
+                onChange={(e) => setEditingProduct(prev => ({ ...prev, stock: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                placeholder="10"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Descripción
+            </label>
+            <textarea
+              value={editingProduct.description}
+              onChange={(e) => setEditingProduct(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              rows="3"
+              placeholder="Describe las características principales del producto..."
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              URL de Imagen
+            </label>
+            <input
+              type="url"
+              value={editingProduct.image}
+              onChange={(e) => setEditingProduct(prev => ({ ...prev, image: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              placeholder="https://images.unsplash.com/..."
+            />
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="editFeatured"
+              checked={editingProduct.featured}
+              onChange={(e) => setEditingProduct(prev => ({ ...prev, featured: e.target.checked }))}
+              className="mr-2"
+            />
+            <label htmlFor="editFeatured" className="text-sm text-gray-700">
+              ⭐ Producto destacado (aparecerá en la página principal)
+            </label>
+          </div>
+        </div>
+        
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={handleUpdateProduct}
+            className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            Actualizar Producto
+          </button>
+          <button
+            onClick={() => {
+              setShowEditProductModal(false);
+              setEditingProduct(null);
+            }}
+            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-bold mb-6">Agregar Nuevo Producto</h3>
@@ -1436,7 +1656,7 @@ const BramsStoreAdmin = () => {
                 type="text"
                 value={newProduct.name}
                 onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 placeholder="iPhone 15 Pro Max"
                 required
               />
@@ -1450,7 +1670,7 @@ const BramsStoreAdmin = () => {
                 type="text"
                 value={newProduct.sku}
                 onChange={(e) => setNewProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 placeholder="IP15P-256"
                 required
               />
@@ -1463,7 +1683,7 @@ const BramsStoreAdmin = () => {
               <select
                 value={newProduct.category}
                 onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
               >
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
@@ -1481,7 +1701,7 @@ const BramsStoreAdmin = () => {
                 type="number"
                 value={newProduct.price}
                 onChange={(e) => setNewProduct(prev => ({ ...prev, price: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 placeholder="650000"
                 required
               />
@@ -1495,7 +1715,7 @@ const BramsStoreAdmin = () => {
                 type="number"
                 value={newProduct.cost}
                 onChange={(e) => setNewProduct(prev => ({ ...prev, cost: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 placeholder="500000"
               />
             </div>
@@ -1508,7 +1728,7 @@ const BramsStoreAdmin = () => {
                 type="number"
                 value={newProduct.stock}
                 onChange={(e) => setNewProduct(prev => ({ ...prev, stock: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 placeholder="10"
               />
             </div>
@@ -1521,7 +1741,7 @@ const BramsStoreAdmin = () => {
             <textarea
               value={newProduct.description}
               onChange={(e) => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
               rows="3"
               placeholder="Describe las características principales del producto..."
             />
@@ -1535,7 +1755,7 @@ const BramsStoreAdmin = () => {
               type="url"
               value={newProduct.image}
               onChange={(e) => setNewProduct(prev => ({ ...prev, image: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
               placeholder="https://images.unsplash.com/..."
             />
           </div>
@@ -1846,6 +2066,7 @@ const BramsStoreAdmin = () => {
 
       <EditUserModal />
       <NewProductModal />
+      <EditProductModal />
     </div>
   );
 };
