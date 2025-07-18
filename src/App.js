@@ -1,4 +1,759 @@
-<p className="font-semibold text-gray-900">{product.name}</p>
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  BarChart3, 
+  Package, 
+  ShoppingCart, 
+  Users, 
+  Settings, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  DollarSign, 
+  TrendingUp,
+  LogOut,
+  Upload,
+  Save,
+  Search,
+  Filter,
+  Download,
+  User,
+  Shield,
+  Bell,
+  CreditCard,
+  Store,
+  Key,
+  UserPlus,
+  Crown,
+  EyeOff,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Loader,
+  Phone,
+  Mail,
+  MapPin,
+  Globe,
+  Facebook,
+  Instagram,
+  MessageCircle
+} from 'lucide-react';
+
+const BramsStoreAdmin = () => {
+  // Estados de autenticación
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  
+  // Estados de navegación
+  const [currentSection, setCurrentSection] = useState('dashboard');
+  
+  // Estados del sistema API
+  const [apiManager, setApiManager] = useState(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastSync, setLastSync] = useState(null);
+  const [syncStatus, setSyncStatus] = useState('idle');
+  const [notifications, setNotifications] = useState([]);
+  
+  // Estados de datos empresariales
+  const [enterpriseData, setEnterpriseData] = useState({
+    products: { products: [], metadata: null },
+    orders: { orders: [], metadata: null },
+    analytics: null,
+    loading: true,
+    error: null
+  });
+
+  // Estados de usuarios locales del admin
+  const [users, setUsers] = useState([
+    {
+      id: 1,
+      username: 'admin',
+      email: 'admin@bramsstore.com',
+      fullName: 'Administrador Principal',
+      role: 'super_admin',
+      status: 'active',
+      lastLogin: '2025-01-17',
+      permissions: ['all']
+    },
+    {
+      id: 2,
+      username: 'carlos_manager',
+      email: 'carlos@bramsstore.com',
+      fullName: 'Carlos Rodríguez',
+      role: 'admin',
+      status: 'active',
+      lastLogin: '2025-01-16',
+      permissions: ['products', 'orders', 'customers']
+    },
+    {
+      id: 3,
+      username: 'ana_editor',
+      email: 'ana@bramsstore.com',
+      fullName: 'Ana Jiménez',
+      role: 'editor',
+      status: 'active',
+      lastLogin: '2025-01-15',
+      permissions: ['products']
+    }
+  ]);
+
+  // Estado para nuevo producto
+  const [showNewProductModal, setShowNewProductModal] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    category: 'smartphones', 
+    price: '',
+    cost: '',
+    image: '',
+    description: '',
+    stock: '',
+    featured: false,
+    sku: ''
+  });
+
+  // Configuración de la tienda MEJORADA
+  const [storeConfig, setStoreConfig] = useState({
+    // Información básica
+    storeName: 'BramsStore',
+    storeDescription: 'Tu tienda de tecnología de confianza en Costa Rica',
+    slogan: 'Tecnología que transforma tu vida',
+    
+    // Contacto
+    address: 'San José, Costa Rica',
+    addressComplete: 'Avenida Central, San José, Costa Rica',
+    phone: '+506 2222-2222',
+    whatsapp: '+506 8888-8888',
+    email: 'info@bramsstore.com',
+    supportEmail: 'soporte@bramsstore.com',
+    
+    // Horarios
+    businessHours: {
+      monday: '8:00 AM - 6:00 PM',
+      tuesday: '8:00 AM - 6:00 PM',
+      wednesday: '8:00 AM - 6:00 PM',
+      thursday: '8:00 AM - 6:00 PM',
+      friday: '8:00 AM - 6:00 PM',
+      saturday: '9:00 AM - 4:00 PM',
+      sunday: 'Cerrado'
+    },
+    
+    // Redes sociales
+    socialMedia: {
+      facebook: 'https://facebook.com/bramsstore',
+      instagram: 'https://instagram.com/bramsstore',
+      tiktok: 'https://tiktok.com/@bramsstore',
+      youtube: 'https://youtube.com/@bramsstore'
+    },
+    
+    // Configuración técnica
+    currency: 'CRC',
+    timezone: 'America/Costa_Rica',
+    language: 'es',
+    
+    // Notificaciones
+    notifications: {
+      newOrders: true,
+      lowStock: true,
+      newUsers: false,
+      weeklyReports: true
+    },
+    
+    // Métodos de pago expandidos
+    paymentMethods: {
+      sinpe: {
+        enabled: true,
+        phone: '+506 8888-8888',
+        name: 'BramsStore S.A.',
+        cedula: '3-101-XXXXXX',
+        instructions: 'Envía el comprobante por WhatsApp después del pago'
+      },
+      cards: {
+        enabled: true,
+        processor: 'Stripe',
+        types: ['Visa', 'Mastercard', 'American Express'],
+        installments: [3, 6, 12]
+      },
+      paypal: {
+        enabled: true,
+        email: 'pagos@bramsstore.com',
+        link: 'https://paypal.me/bramsstore'
+      },
+      bankTransfer: {
+        enabled: true,
+        accounts: [
+          { bank: 'BAC', iban: 'CR12345678901234567890', account: '123456789' },
+          { bank: 'BCR', iban: 'CR09876543210987654321', account: '987654321' },
+          { bank: 'Banco Nacional', iban: 'CR11111111111111111111', account: '111111111' }
+        ]
+      }
+    }
+  });
+
+  // Estados para formularios
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [configTab, setConfigTab] = useState('store');
+
+  const categories = [
+    { id: 'smartphones', name: 'Smartphones' },
+    { id: 'laptops', name: 'Laptops' },
+    { id: 'accesorios', name: 'Accesorios' },
+    { id: 'software', name: 'Software' },
+    { id: 'servicios', name: 'Servicios' },
+    { id: 'ropa', name: 'Ropa' }
+  ];
+
+  // Roles disponibles
+  const roles = [
+    {
+      id: 'super_admin',
+      name: 'Super Admin',
+      description: 'Acceso completo al sistema',
+      icon: Crown,
+      color: 'text-purple-600',
+      permissions: ['all']
+    },
+    {
+      id: 'admin',
+      name: 'Administrador',
+      description: 'Gestión de productos, pedidos y clientes',
+      icon: Shield,
+      color: 'text-blue-600',
+      permissions: ['products', 'orders', 'customers', 'reports']
+    },
+    {
+      id: 'editor',
+      name: 'Editor',
+      description: 'Solo edición de productos',
+      icon: Edit,
+      color: 'text-green-600',
+      permissions: ['products']
+    },
+    {
+      id: 'viewer',
+      name: 'Visor',
+      description: 'Solo lectura de estadísticas',
+      icon: Eye,
+      color: 'text-gray-600',
+      permissions: ['dashboard']
+    }
+  ];
+
+  // Inicializar API Manager Enterprise
+  useEffect(() => {
+    const initializeAPIManager = async () => {
+      try {
+        const api = {
+          getProducts: async () => {
+            const response = await fetch('https://raw.githubusercontent.com/Lex-Salas/bramsstore-data/main/products.json');
+            if (!response.ok) throw new Error('Error fetching products');
+            return await response.json();
+          },
+          
+          getOrders: async () => {
+            const response = await fetch('https://raw.githubusercontent.com/Lex-Salas/bramsstore-data/main/orders.json');
+            if (!response.ok) throw new Error('Error fetching orders');
+            return await response.json();
+          },
+
+          getAnalytics: async () => {
+            return {
+              totalRevenue: 2175000,
+              totalOrders: 3,
+              averageOrderValue: 725000,
+              topSellingProducts: [
+                { name: 'AirPods Pro 2', sales: 78, revenue: 9750000 },
+                { name: 'iPhone 15 Pro', sales: 45, revenue: 29250000 },
+                { name: 'MacBook Pro 14"', sales: 23, revenue: 27600000 }
+              ],
+              recentActivity: [
+                { type: 'order', message: 'Nuevo pedido BS-2025-001', time: '2 min ago' },
+                { type: 'product', message: 'Stock actualizado: AirPods Pro 2', time: '5 min ago' },
+                { type: 'system', message: 'Sincronización completada', time: '10 min ago' }
+              ]
+            };
+          },
+
+          on: (event, callback) => {
+            console.log(`Escuchando evento: ${event}`);
+          },
+
+          startAutoSync: () => {
+            console.log('Auto-sync iniciado');
+            setLastSync(new Date().toISOString());
+          },
+
+          getStatus: () => ({
+            isOnline: navigator.onLine,
+            lastSync: lastSync,
+            cacheSize: 0,
+            failedRequests: 0
+          })
+        };
+
+        setApiManager(api);
+        await loadEnterpriseData(api);
+        api.startAutoSync();
+        addNotification('success', 'Sistema conectado al backend enterprise');
+        
+      } catch (error) {
+        console.error('Error inicializando API Manager:', error);
+        addNotification('error', 'Error conectando con el backend de datos');
+      }
+    };
+
+    if (isLoggedIn) {
+      initializeAPIManager();
+    }
+  }, [isLoggedIn]);
+
+  // Cargar datos enterprise desde GitHub
+  const loadEnterpriseData = useCallback(async (api = apiManager) => {
+    if (!api) return;
+
+    try {
+      setEnterpriseData(prev => ({ ...prev, loading: true, error: null }));
+      setSyncStatus('syncing');
+
+      const [products, orders, analytics] = await Promise.all([
+        api.getProducts(),
+        api.getOrders(),
+        api.getAnalytics()
+      ]);
+
+      setEnterpriseData({
+        products,
+        orders,
+        analytics,
+        loading: false,
+        error: null
+      });
+
+      setSyncStatus('success');
+      setLastSync(new Date().toISOString());
+      checkLowStockAlerts(products.products);
+      
+    } catch (error) {
+      console.error('Error cargando datos enterprise:', error);
+      setEnterpriseData(prev => ({ ...prev, loading: false, error: error.message }));
+      setSyncStatus('error');
+      addNotification('error', 'Error sincronizando datos');
+    }
+  }, [apiManager]);
+
+  // Auto-sync cada 30 segundos
+  useEffect(() => {
+    if (!apiManager || !isLoggedIn) return;
+
+    const interval = setInterval(() => {
+      loadEnterpriseData();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [apiManager, isLoggedIn, loadEnterpriseData]);
+
+  // Verificar alertas de stock bajo
+  const checkLowStockAlerts = (products) => {
+    const lowStockProducts = products.filter(product => 
+      product.inventory.stock <= product.inventory.reorderLevel
+    );
+
+    lowStockProducts.forEach(product => {
+      addNotification('warning', `Stock bajo: ${product.name} (${product.inventory.stock} unidades)`);
+    });
+  };
+
+  // Sistema de notificaciones
+  const addNotification = (type, message) => {
+    const notification = {
+      id: Date.now(),
+      type,
+      message,
+      timestamp: new Date().toISOString()
+    };
+
+    setNotifications(prev => [notification, ...prev.slice(0, 4)]);
+
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== notification.id));
+    }, 5000);
+  };
+
+  // Función de login
+  const handleLogin = () => {
+    const user = users.find(u => u.username === loginForm.username);
+    
+    if (loginForm.username === 'admin' && loginForm.password === 'bramsstore2025') {
+      const adminUser = users.find(u => u.username === 'admin');
+      setCurrentUser(adminUser);
+      setIsLoggedIn(true);
+      localStorage.setItem('adminLoggedIn', 'true');
+      localStorage.setItem('currentUser', JSON.stringify(adminUser));
+    } else if (user && loginForm.password === 'demo123') {
+      setCurrentUser(user);
+      setIsLoggedIn(true);
+      localStorage.setItem('adminLoggedIn', 'true');
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+      alert('Credenciales incorrectas');
+    }
+  };
+
+  // Verificar login al cargar
+  useEffect(() => {
+    const savedLogin = localStorage.getItem('adminLoggedIn');
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedLogin === 'true' && savedUser) {
+      setIsLoggedIn(true);
+      setCurrentUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  // Función de logout
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    setApiManager(null);
+    setEnterpriseData({ products: { products: [], metadata: null }, orders: { orders: [], metadata: null }, analytics: null, loading: true, error: null });
+    localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem('currentUser');
+  };
+
+  // Verificar permisos
+  const hasPermission = (permission) => {
+    if (!currentUser) return false;
+    if (currentUser.role === 'super_admin') return true;
+    return currentUser.permissions.includes(permission);
+  };
+
+  // Función de sync manual
+  const handleManualSync = () => {
+    if (apiManager) {
+      loadEnterpriseData();
+      addNotification('info', 'Sincronización manual iniciada');
+    }
+  };
+
+  // Función para agregar producto
+  const handleAddProduct = () => {
+    if (!newProduct.name || !newProduct.price || !newProduct.sku) {
+      addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
+      return;
+    }
+
+    const product = {
+      id: `prod_${Date.now()}`,
+      sku: newProduct.sku,
+      name: newProduct.name,
+      description: newProduct.description,
+      category: { 
+        id: newProduct.category, 
+        name: categories.find(c => c.id === newProduct.category)?.name || 'Otros'
+      },
+      pricing: { 
+        price: parseInt(newProduct.price), 
+        cost: parseInt(newProduct.cost || '0'),
+        profitMargin: newProduct.cost ? ((parseInt(newProduct.price) - parseInt(newProduct.cost)) / parseInt(newProduct.price) * 100).toFixed(1) : 0
+      },
+      inventory: { 
+        stock: parseInt(newProduct.stock || '0'), 
+        available: parseInt(newProduct.stock || '0'),
+        reorderLevel: 5
+      },
+      media: { 
+        primaryImage: newProduct.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=500&fit=crop'
+      },
+      sales: { 
+        totalSold: 0, 
+        averageRating: 0,
+        revenue: 0
+      },
+      status: { 
+        featured: newProduct.featured 
+      },
+      timestamps: {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString()
+      }
+    };
+
+    console.log('Nuevo producto creado:', product);
+    addNotification('success', `Producto "${newProduct.name}" creado exitosamente`);
+    
+    // Limpiar formulario y cerrar modal
+    setNewProduct({
+      name: '',
+      category: 'smartphones',
+      price: '',
+      cost: '',
+      image: '',
+      description: '',
+      stock: '',
+      featured: false,
+      sku: ''
+    });
+    setShowNewProductModal(false);
+    
+    // Recargar datos
+    loadEnterpriseData();
+  };
+
+  // Funciones de usuarios
+  const handleEditUser = (user) => {
+    setEditingUser({ ...user });
+  };
+
+  const handleUpdateUser = () => {
+    setUsers(prev =>
+      prev.map(u => u.id === editingUser.id ? editingUser : u)
+    );
+    setEditingUser(null);
+    addNotification('success', 'Usuario actualizado exitosamente');
+  };
+
+  const handleDeleteUser = (id) => {
+    if (id === 1) {
+      addNotification('error', 'No puedes eliminar al super administrador');
+      return;
+    }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+      setUsers(prev => prev.filter(u => u.id !== id));
+      addNotification('success', 'Usuario eliminado exitosamente');
+    }
+  };
+
+  // Formatear precio
+  const formatPrice = (price) => `₡${price.toLocaleString()}`;
+
+  // Formatear tiempo relativo
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return 'Nunca';
+    
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Ahora mismo';
+    if (diffInMinutes < 60) return `Hace ${diffInMinutes} min`;
+    if (diffInMinutes < 1440) return `Hace ${Math.floor(diffInMinutes / 60)} horas`;
+    return `Hace ${Math.floor(diffInMinutes / 1440)} días`;
+  };
+
+  // Pantalla de login
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="h-16 w-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl flex items-center justify-center">
+              <ShoppingCart className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              <span className="text-blue-600">Brams</span>
+              <span className="text-orange-500">Store</span> Admin
+            </h1>
+            <p className="text-gray-600">Panel de Administración Enterprise</p>
+          </div>
+          
+          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Usuario"
+                value={loginForm.username}
+                onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-500 to-orange-500 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-orange-600 transition-all duration-300"
+              >
+                Iniciar Sesión
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Dashboard Enterprise
+  const DashboardView = () => {
+    const { products, orders, analytics, loading, error } = enterpriseData;
+
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <Loader className="w-8 h-8 animate-spin text-blue-500" />
+          <span className="ml-2 text-gray-900">Cargando datos enterprise...</span>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <AlertTriangle className="w-6 h-6 text-red-500 mr-2" />
+            <span className="text-red-800">Error cargando datos: {error}</span>
+          </div>
+        </div>
+      );
+    }
+
+    const totalRevenue = orders.metadata?.totalRevenue || 0;
+    const totalOrders = orders.metadata?.totalOrders || 0;
+    const totalProducts = products.metadata?.totalProducts || 0;
+    const lowStockCount = products.products?.filter(p => p.inventory.stock <= p.inventory.reorderLevel).length || 0;
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-800">Dashboard Enterprise</h2>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center text-sm text-gray-600">
+              {isOnline ? (
+                <Wifi className="w-4 h-4 text-green-500 mr-1" />
+              ) : (
+                <WifiOff className="w-4 h-4 text-red-500 mr-1" />
+              )}
+              <span className="text-gray-900">{isOnline ? 'Online' : 'Offline'}</span>
+            </div>
+            
+            <div className="flex items-center text-sm text-gray-600">
+              <Clock className="w-4 h-4 mr-1" />
+              <span className="text-gray-900">Última sync: {formatTimeAgo(lastSync)}</span>
+            </div>
+            
+            <button
+              onClick={handleManualSync}
+              disabled={syncStatus === 'syncing'}
+              className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                syncStatus === 'syncing' 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+              }`}
+            >
+              <RefreshCw className={`w-4 h-4 mr-1 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
+              <span className="text-gray-900">{syncStatus === 'syncing' ? 'Sincronizando...' : 'Sincronizar'}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm">Ingresos Totales</p>
+                <p className="text-2xl font-bold text-green-600">{formatPrice(totalRevenue)}</p>
+                <p className="text-xs text-gray-500 mt-1">Datos en tiempo real</p>
+              </div>
+              <DollarSign className="w-12 h-12 text-green-500" />
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm">Total Pedidos</p>
+                <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
+                <p className="text-xs text-gray-500 mt-1">Desde GitHub</p>
+              </div>
+              <ShoppingCart className="w-12 h-12 text-blue-500" />
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm">Total Productos</p>
+                <p className="text-2xl font-bold text-purple-600">{totalProducts}</p>
+                <p className="text-xs text-gray-500 mt-1">Sincronizado</p>
+              </div>
+              <Package className="w-12 h-12 text-purple-500" />
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm">Alertas Stock</p>
+                <p className="text-2xl font-bold text-red-600">{lowStockCount}</p>
+                <p className="text-xs text-gray-500 mt-1">Requieren atención</p>
+              </div>
+              <AlertTriangle className="w-12 h-12 text-red-500" />
+            </div>
+          </div>
+        </div>
+
+        {hasPermission('orders') && (
+          <div className="bg-white p-6 rounded-xl shadow-lg">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Pedidos Recientes (GitHub Data)</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">ID</th>
+                    <th className="text-left py-2">Cliente</th>
+                    <th className="text-left py-2">Total</th>
+                    <th className="text-left py-2">Estado</th>
+                    <th className="text-left py-2">Fecha</th>
+                    <th className="text-left py-2">Origen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.orders?.slice(0, 5).map(order => (
+                    <tr key={order.id} className="border-b">
+                      <td className="py-2 font-mono text-sm text-gray-900">{order.orderNumber}</td>
+                      <td className="py-2 text-gray-900">{order.customer.fullName}</td>
+                      <td className="py-2 font-semibold text-gray-900">{formatPrice(order.pricing.total)}</td>
+                      <td className="py-2">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="py-2 text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</td>
+                      <td className="py-2">
+                        <span className="inline-flex items-center text-gray-900">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                          Enterprise
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
+          <div className="space-y-4">
+            {products.products?.sort((a, b) => b.sales.totalSold - a.sales.totalSold).slice(0, 5).map(product => (
+              <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center space-x-4">
+                  <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                  <div>
+                    <p className="font-semibold text-gray-900">{product.name}</p>
                     <p className="text-sm text-gray-600">{product.sales.totalSold} ventas • SKU: {product.sku}</p>
                   </div>
                 </div>
@@ -1095,759 +1850,4 @@
   );
 };
 
-export default BramsStoreAdmin;import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  BarChart3, 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  Settings, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  DollarSign, 
-  TrendingUp,
-  LogOut,
-  Upload,
-  Save,
-  Search,
-  Filter,
-  Download,
-  User,
-  Shield,
-  Bell,
-  CreditCard,
-  Store,
-  Key,
-  UserPlus,
-  Crown,
-  EyeOff,
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  Loader,
-  Phone,
-  Mail,
-  MapPin,
-  Globe,
-  Facebook,
-  Instagram,
-  MessageCircle
-} from 'lucide-react';
-
-const BramsStoreAdmin = () => {
-  // Estados de autenticación
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-  
-  // Estados de navegación
-  const [currentSection, setCurrentSection] = useState('dashboard');
-  
-  // Estados del sistema API
-  const [apiManager, setApiManager] = useState(null);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [lastSync, setLastSync] = useState(null);
-  const [syncStatus, setSyncStatus] = useState('idle');
-  const [notifications, setNotifications] = useState([]);
-  
-  // Estados de datos empresariales
-  const [enterpriseData, setEnterpriseData] = useState({
-    products: { products: [], metadata: null },
-    orders: { orders: [], metadata: null },
-    analytics: null,
-    loading: true,
-    error: null
-  });
-
-  // Estados de usuarios locales del admin
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      username: 'admin',
-      email: 'admin@bramsstore.com',
-      fullName: 'Administrador Principal',
-      role: 'super_admin',
-      status: 'active',
-      lastLogin: '2025-01-17',
-      permissions: ['all']
-    },
-    {
-      id: 2,
-      username: 'carlos_manager',
-      email: 'carlos@bramsstore.com',
-      fullName: 'Carlos Rodríguez',
-      role: 'admin',
-      status: 'active',
-      lastLogin: '2025-01-16',
-      permissions: ['products', 'orders', 'customers']
-    },
-    {
-      id: 3,
-      username: 'ana_editor',
-      email: 'ana@bramsstore.com',
-      fullName: 'Ana Jiménez',
-      role: 'editor',
-      status: 'active',
-      lastLogin: '2025-01-15',
-      permissions: ['products']
-    }
-  ]);
-
-  // Estado para nuevo producto
-  const [showNewProductModal, setShowNewProductModal] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    category: 'smartphones', 
-    price: '',
-    cost: '',
-    image: '',
-    description: '',
-    stock: '',
-    featured: false,
-    sku: ''
-  });
-
-  // Configuración de la tienda MEJORADA
-  const [storeConfig, setStoreConfig] = useState({
-    // Información básica
-    storeName: 'BramsStore',
-    storeDescription: 'Tu tienda de tecnología de confianza en Costa Rica',
-    slogan: 'Tecnología que transforma tu vida',
-    
-    // Contacto
-    address: 'San José, Costa Rica',
-    addressComplete: 'Avenida Central, San José, Costa Rica',
-    phone: '+506 2222-2222',
-    whatsapp: '+506 8888-8888',
-    email: 'info@bramsstore.com',
-    supportEmail: 'soporte@bramsstore.com',
-    
-    // Horarios
-    businessHours: {
-      monday: '8:00 AM - 6:00 PM',
-      tuesday: '8:00 AM - 6:00 PM',
-      wednesday: '8:00 AM - 6:00 PM',
-      thursday: '8:00 AM - 6:00 PM',
-      friday: '8:00 AM - 6:00 PM',
-      saturday: '9:00 AM - 4:00 PM',
-      sunday: 'Cerrado'
-    },
-    
-    // Redes sociales
-    socialMedia: {
-      facebook: 'https://facebook.com/bramsstore',
-      instagram: 'https://instagram.com/bramsstore',
-      tiktok: 'https://tiktok.com/@bramsstore',
-      youtube: 'https://youtube.com/@bramsstore'
-    },
-    
-    // Configuración técnica
-    currency: 'CRC',
-    timezone: 'America/Costa_Rica',
-    language: 'es',
-    
-    // Notificaciones
-    notifications: {
-      newOrders: true,
-      lowStock: true,
-      newUsers: false,
-      weeklyReports: true
-    },
-    
-    // Métodos de pago expandidos
-    paymentMethods: {
-      sinpe: {
-        enabled: true,
-        phone: '+506 8888-8888',
-        name: 'BramsStore S.A.',
-        cedula: '3-101-XXXXXX',
-        instructions: 'Envía el comprobante por WhatsApp después del pago'
-      },
-      cards: {
-        enabled: true,
-        processor: 'Stripe',
-        types: ['Visa', 'Mastercard', 'American Express'],
-        installments: [3, 6, 12]
-      },
-      paypal: {
-        enabled: true,
-        email: 'pagos@bramsstore.com',
-        link: 'https://paypal.me/bramsstore'
-      },
-      bankTransfer: {
-        enabled: true,
-        accounts: [
-          { bank: 'BAC', iban: 'CR12345678901234567890', account: '123456789' },
-          { bank: 'BCR', iban: 'CR09876543210987654321', account: '987654321' },
-          { bank: 'Banco Nacional', iban: 'CR11111111111111111111', account: '111111111' }
-        ]
-      }
-    }
-  });
-
-  // Estados para formularios
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [editingUser, setEditingUser] = useState(null);
-  const [configTab, setConfigTab] = useState('store');
-
-  const categories = [
-    { id: 'smartphones', name: 'Smartphones' },
-    { id: 'laptops', name: 'Laptops' },
-    { id: 'accesorios', name: 'Accesorios' },
-    { id: 'software', name: 'Software' },
-    { id: 'servicios', name: 'Servicios' },
-    { id: 'ropa', name: 'Ropa' }
-  ];
-
-  // Roles disponibles
-  const roles = [
-    {
-      id: 'super_admin',
-      name: 'Super Admin',
-      description: 'Acceso completo al sistema',
-      icon: Crown,
-      color: 'text-purple-600',
-      permissions: ['all']
-    },
-    {
-      id: 'admin',
-      name: 'Administrador',
-      description: 'Gestión de productos, pedidos y clientes',
-      icon: Shield,
-      color: 'text-blue-600',
-      permissions: ['products', 'orders', 'customers', 'reports']
-    },
-    {
-      id: 'editor',
-      name: 'Editor',
-      description: 'Solo edición de productos',
-      icon: Edit,
-      color: 'text-green-600',
-      permissions: ['products']
-    },
-    {
-      id: 'viewer',
-      name: 'Visor',
-      description: 'Solo lectura de estadísticas',
-      icon: Eye,
-      color: 'text-gray-600',
-      permissions: ['dashboard']
-    }
-  ];
-
-  // Inicializar API Manager Enterprise
-  useEffect(() => {
-    const initializeAPIManager = async () => {
-      try {
-        const api = {
-          getProducts: async () => {
-            const response = await fetch('https://raw.githubusercontent.com/Lex-Salas/bramsstore-data/main/products.json');
-            if (!response.ok) throw new Error('Error fetching products');
-            return await response.json();
-          },
-          
-          getOrders: async () => {
-            const response = await fetch('https://raw.githubusercontent.com/Lex-Salas/bramsstore-data/main/orders.json');
-            if (!response.ok) throw new Error('Error fetching orders');
-            return await response.json();
-          },
-
-          getAnalytics: async () => {
-            return {
-              totalRevenue: 2175000,
-              totalOrders: 3,
-              averageOrderValue: 725000,
-              topSellingProducts: [
-                { name: 'AirPods Pro 2', sales: 78, revenue: 9750000 },
-                { name: 'iPhone 15 Pro', sales: 45, revenue: 29250000 },
-                { name: 'MacBook Pro 14"', sales: 23, revenue: 27600000 }
-              ],
-              recentActivity: [
-                { type: 'order', message: 'Nuevo pedido BS-2025-001', time: '2 min ago' },
-                { type: 'product', message: 'Stock actualizado: AirPods Pro 2', time: '5 min ago' },
-                { type: 'system', message: 'Sincronización completada', time: '10 min ago' }
-              ]
-            };
-          },
-
-          on: (event, callback) => {
-            console.log(`Escuchando evento: ${event}`);
-          },
-
-          startAutoSync: () => {
-            console.log('Auto-sync iniciado');
-            setLastSync(new Date().toISOString());
-          },
-
-          getStatus: () => ({
-            isOnline: navigator.onLine,
-            lastSync: lastSync,
-            cacheSize: 0,
-            failedRequests: 0
-          })
-        };
-
-        setApiManager(api);
-        await loadEnterpriseData(api);
-        api.startAutoSync();
-        addNotification('success', 'Sistema conectado al backend enterprise');
-        
-      } catch (error) {
-        console.error('Error inicializando API Manager:', error);
-        addNotification('error', 'Error conectando con el backend de datos');
-      }
-    };
-
-    if (isLoggedIn) {
-      initializeAPIManager();
-    }
-  }, [isLoggedIn]);
-
-  // Cargar datos enterprise desde GitHub
-  const loadEnterpriseData = useCallback(async (api = apiManager) => {
-    if (!api) return;
-
-    try {
-      setEnterpriseData(prev => ({ ...prev, loading: true, error: null }));
-      setSyncStatus('syncing');
-
-      const [products, orders, analytics] = await Promise.all([
-        api.getProducts(),
-        api.getOrders(),
-        api.getAnalytics()
-      ]);
-
-      setEnterpriseData({
-        products,
-        orders,
-        analytics,
-        loading: false,
-        error: null
-      });
-
-      setSyncStatus('success');
-      setLastSync(new Date().toISOString());
-      checkLowStockAlerts(products.products);
-      
-    } catch (error) {
-      console.error('Error cargando datos enterprise:', error);
-      setEnterpriseData(prev => ({ ...prev, loading: false, error: error.message }));
-      setSyncStatus('error');
-      addNotification('error', 'Error sincronizando datos');
-    }
-  }, [apiManager]);
-
-  // Auto-sync cada 30 segundos
-  useEffect(() => {
-    if (!apiManager || !isLoggedIn) return;
-
-    const interval = setInterval(() => {
-      loadEnterpriseData();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [apiManager, isLoggedIn, loadEnterpriseData]);
-
-  // Verificar alertas de stock bajo
-  const checkLowStockAlerts = (products) => {
-    const lowStockProducts = products.filter(product => 
-      product.inventory.stock <= product.inventory.reorderLevel
-    );
-
-    lowStockProducts.forEach(product => {
-      addNotification('warning', `Stock bajo: ${product.name} (${product.inventory.stock} unidades)`);
-    });
-  };
-
-  // Sistema de notificaciones
-  const addNotification = (type, message) => {
-    const notification = {
-      id: Date.now(),
-      type,
-      message,
-      timestamp: new Date().toISOString()
-    };
-
-    setNotifications(prev => [notification, ...prev.slice(0, 4)]);
-
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== notification.id));
-    }, 5000);
-  };
-
-  // Función de login
-  const handleLogin = () => {
-    const user = users.find(u => u.username === loginForm.username);
-    
-    if (loginForm.username === 'admin' && loginForm.password === 'bramsstore2025') {
-      const adminUser = users.find(u => u.username === 'admin');
-      setCurrentUser(adminUser);
-      setIsLoggedIn(true);
-      localStorage.setItem('adminLoggedIn', 'true');
-      localStorage.setItem('currentUser', JSON.stringify(adminUser));
-    } else if (user && loginForm.password === 'demo123') {
-      setCurrentUser(user);
-      setIsLoggedIn(true);
-      localStorage.setItem('adminLoggedIn', 'true');
-      localStorage.setItem('currentUser', JSON.stringify(user));
-    } else {
-      alert('Credenciales incorrectas');
-    }
-  };
-
-  // Verificar login al cargar
-  useEffect(() => {
-    const savedLogin = localStorage.getItem('adminLoggedIn');
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedLogin === 'true' && savedUser) {
-      setIsLoggedIn(true);
-      setCurrentUser(JSON.parse(savedUser));
-    }
-  }, []);
-
-  // Función de logout
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-    setApiManager(null);
-    setEnterpriseData({ products: { products: [], metadata: null }, orders: { orders: [], metadata: null }, analytics: null, loading: true, error: null });
-    localStorage.removeItem('adminLoggedIn');
-    localStorage.removeItem('currentUser');
-  };
-
-  // Verificar permisos
-  const hasPermission = (permission) => {
-    if (!currentUser) return false;
-    if (currentUser.role === 'super_admin') return true;
-    return currentUser.permissions.includes(permission);
-  };
-
-  // Función de sync manual
-  const handleManualSync = () => {
-    if (apiManager) {
-      loadEnterpriseData();
-      addNotification('info', 'Sincronización manual iniciada');
-    }
-  };
-
-  // Función para agregar producto
-  const handleAddProduct = () => {
-    if (!newProduct.name || !newProduct.price || !newProduct.sku) {
-      addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
-      return;
-    }
-
-    const product = {
-      id: `prod_${Date.now()}`,
-      sku: newProduct.sku,
-      name: newProduct.name,
-      description: newProduct.description,
-      category: { 
-        id: newProduct.category, 
-        name: categories.find(c => c.id === newProduct.category)?.name || 'Otros'
-      },
-      pricing: { 
-        price: parseInt(newProduct.price), 
-        cost: parseInt(newProduct.cost || '0'),
-        profitMargin: newProduct.cost ? ((parseInt(newProduct.price) - parseInt(newProduct.cost)) / parseInt(newProduct.price) * 100).toFixed(1) : 0
-      },
-      inventory: { 
-        stock: parseInt(newProduct.stock || '0'), 
-        available: parseInt(newProduct.stock || '0'),
-        reorderLevel: 5
-      },
-      media: { 
-        primaryImage: newProduct.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=500&fit=crop'
-      },
-      sales: { 
-        totalSold: 0, 
-        averageRating: 0,
-        revenue: 0
-      },
-      status: { 
-        featured: newProduct.featured 
-      },
-      timestamps: {
-        created: new Date().toISOString(),
-        updated: new Date().toISOString()
-      }
-    };
-
-    console.log('Nuevo producto creado:', product);
-    addNotification('success', `Producto "${newProduct.name}" creado exitosamente`);
-    
-    // Limpiar formulario y cerrar modal
-    setNewProduct({
-      name: '',
-      category: 'smartphones',
-      price: '',
-      cost: '',
-      image: '',
-      description: '',
-      stock: '',
-      featured: false,
-      sku: ''
-    });
-    setShowNewProductModal(false);
-    
-    // Recargar datos
-    loadEnterpriseData();
-  };
-
-  // Funciones de usuarios
-  const handleEditUser = (user) => {
-    setEditingUser({ ...user });
-  };
-
-  const handleUpdateUser = () => {
-    setUsers(prev =>
-      prev.map(u => u.id === editingUser.id ? editingUser : u)
-    );
-    setEditingUser(null);
-    addNotification('success', 'Usuario actualizado exitosamente');
-  };
-
-  const handleDeleteUser = (id) => {
-    if (id === 1) {
-      addNotification('error', 'No puedes eliminar al super administrador');
-      return;
-    }
-    if (window.confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
-      setUsers(prev => prev.filter(u => u.id !== id));
-      addNotification('success', 'Usuario eliminado exitosamente');
-    }
-  };
-
-  // Formatear precio
-  const formatPrice = (price) => `₡${price.toLocaleString()}`;
-
-  // Formatear tiempo relativo
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return 'Nunca';
-    
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diffInMinutes = Math.floor((now - time) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'Ahora mismo';
-    if (diffInMinutes < 60) return `Hace ${diffInMinutes} min`;
-    if (diffInMinutes < 1440) return `Hace ${Math.floor(diffInMinutes / 60)} horas`;
-    return `Hace ${Math.floor(diffInMinutes / 1440)} días`;
-  };
-
-  // Pantalla de login
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="h-16 w-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl flex items-center justify-center">
-              <ShoppingCart className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              <span className="text-blue-600">Brams</span>
-              <span className="text-orange-500">Store</span> Admin
-            </h1>
-            <p className="text-gray-600">Panel de Administración Enterprise</p>
-          </div>
-          
-          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Usuario"
-                value={loginForm.username}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Contraseña"
-                value={loginForm.password}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
-                required
-              />
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-orange-500 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-orange-600 transition-all duration-300"
-              >
-                Iniciar Sesión
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // Dashboard Enterprise
-  const DashboardView = () => {
-    const { products, orders, analytics, loading, error } = enterpriseData;
-
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center h-64">
-          <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-900">Cargando datos enterprise...</span>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center">
-            <AlertTriangle className="w-6 h-6 text-red-500 mr-2" />
-            <span className="text-red-800">Error cargando datos: {error}</span>
-          </div>
-        </div>
-      );
-    }
-
-    const totalRevenue = orders.metadata?.totalRevenue || 0;
-    const totalOrders = orders.metadata?.totalOrders || 0;
-    const totalProducts = products.metadata?.totalProducts || 0;
-    const lowStockCount = products.products?.filter(p => p.inventory.stock <= p.inventory.reorderLevel).length || 0;
-
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Dashboard Enterprise</h2>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-sm text-gray-600">
-              {isOnline ? (
-                <Wifi className="w-4 h-4 text-green-500 mr-1" />
-              ) : (
-                <WifiOff className="w-4 h-4 text-red-500 mr-1" />
-              )}
-              <span className="text-gray-900">{isOnline ? 'Online' : 'Offline'}</span>
-            </div>
-            
-            <div className="flex items-center text-sm text-gray-600">
-              <Clock className="w-4 h-4 mr-1" />
-              <span className="text-gray-900">Última sync: {formatTimeAgo(lastSync)}</span>
-            </div>
-            
-            <button
-              onClick={handleManualSync}
-              disabled={syncStatus === 'syncing'}
-              className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                syncStatus === 'syncing' 
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-              }`}
-            >
-              <RefreshCw className={`w-4 h-4 mr-1 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
-              <span className="text-gray-900">{syncStatus === 'syncing' ? 'Sincronizando...' : 'Sincronizar'}</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Ingresos Totales</p>
-                <p className="text-2xl font-bold text-green-600">{formatPrice(totalRevenue)}</p>
-                <p className="text-xs text-gray-500 mt-1">Datos en tiempo real</p>
-              </div>
-              <DollarSign className="w-12 h-12 text-green-500" />
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Total Pedidos</p>
-                <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
-                <p className="text-xs text-gray-500 mt-1">Desde GitHub</p>
-              </div>
-              <ShoppingCart className="w-12 h-12 text-blue-500" />
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Total Productos</p>
-                <p className="text-2xl font-bold text-purple-600">{totalProducts}</p>
-                <p className="text-xs text-gray-500 mt-1">Sincronizado</p>
-              </div>
-              <Package className="w-12 h-12 text-purple-500" />
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Alertas Stock</p>
-                <p className="text-2xl font-bold text-red-600">{lowStockCount}</p>
-                <p className="text-xs text-gray-500 mt-1">Requieren atención</p>
-              </div>
-              <AlertTriangle className="w-12 h-12 text-red-500" />
-            </div>
-          </div>
-        </div>
-
-        {hasPermission('orders') && (
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Pedidos Recientes (GitHub Data)</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">ID</th>
-                    <th className="text-left py-2">Cliente</th>
-                    <th className="text-left py-2">Total</th>
-                    <th className="text-left py-2">Estado</th>
-                    <th className="text-left py-2">Fecha</th>
-                    <th className="text-left py-2">Origen</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.orders?.slice(0, 5).map(order => (
-                    <tr key={order.id} className="border-b">
-                      <td className="py-2 font-mono text-sm text-gray-900">{order.orderNumber}</td>
-                      <td className="py-2 text-gray-900">{order.customer.fullName}</td>
-                      <td className="py-2 font-semibold text-gray-900">{formatPrice(order.pricing.total)}</td>
-                      <td className="py-2">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="py-2 text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</td>
-                      <td className="py-2">
-                        <span className="inline-flex items-center text-gray-900">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                          Enterprise
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
-          <div className="space-y-4">
-            {products.products?.sort((a, b) => b.sales.totalSold - a.sales.totalSold).slice(0, 5).map(product => (
-              <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                <div className="flex items-center space-x-4">
-                  <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
-                  <div>
-                    <p className="font-semibold text-gray
+export default BramsStoreAdmin;
