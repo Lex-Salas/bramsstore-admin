@@ -1,537 +1,485 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  BarChart3, 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  Settings, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  DollarSign, 
-  TrendingUp,
-  LogOut,
-  Upload,
-  Save,
-  Search,
-  Filter,
-  Download,
-  User,
-  Shield,
-  Bell,
-  CreditCard,
-  Store,
-  Key,
-  UserPlus,
-  Crown,
-  EyeOff,
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  Loader,
-  Phone,
-  Mail,
-  MapPin,
-  Globe,
-  Facebook,
-  Instagram,
-  MessageCircle
-} from 'lucide-react';
-                <select
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                disabled={editingUser.id === 1}
-              >
-                <option value="active">✅ Activo - Puede acceder al sistema</option>
-                <option value="inactive">❌ Inactivo - Acceso bloqueado</option>
-              </select>
-              {editingUser.id === 1 && (
-                <p className="text-xs text-gray-500 mt-1">El super admin siempre está activo</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-blue-800 mb-2">Permisos del Rol Seleccionado:</h4>
-            <div className="text-sm text-blue-700">
-              {(() => {
-                const role = roles.find(r => r.id === editingUser.role);
-                if (role?.id === 'super_admin') return '🔓 Acceso completo a todo el sistema';
-                if (role?.id === 'admin') return '📦 Productos, Pedidos, Clientes, Reportes';
-                if (role?.id === 'editor') return '✏️ Solo edición de productos';
-                if (role?.id === 'viewer') return '👁️ Solo lectura del dashboard';
-                return 'Permisos limitados';
-              })()}
-            </div>
+<p className="font-semibold text-gray-900">{product.name}</p>
+                    <p className="text-sm text-gray-600">{product.sales.totalSold} ventas • SKU: {product.sku}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-green-600">{formatPrice(product.sales.revenue)}</p>
+                  <p className="text-sm text-gray-500">Rating: {product.sales.averageRating}⭐</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={handleUpdateUser}
-            className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Guardar Cambios
-          </button>
-          <button
-            onClick={() => setEditingUser(null)}
-            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Notificaciones */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        {notifications.map(notification => (
-          <div
-            key={notification.id}
-            className={`px-4 py-3 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 ${
-              notification.type === 'success' ? 'bg-green-500 text-white' :
-              notification.type === 'error' ? 'bg-red-500 text-white' :
-              notification.type === 'warning' ? 'bg-yellow-500 text-white' :
-              'bg-blue-500 text-white'
-            }`}
-          >
-            <div className="flex items-center">
-              {notification.type === 'success' && <CheckCircle className="w-5 h-5 mr-2" />}
-              {notification.type === 'error' && <AlertTriangle className="w-5 h-5 mr-2" />}
-              {notification.type === 'warning' && <AlertTriangle className="w-5 h-5 mr-2" />}
-              {notification.type === 'info' && <Bell className="w-5 h-5 mr-2" />}
-              <span className="text-sm font-medium">{notification.message}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-30">
-        <div className="p-6 border-b">
-          <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
-              <ShoppingCart className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold">
-                <span className="text-blue-600">Brams</span>
-                <span className="text-orange-500">Store</span>
-              </h1>
-              <p className="text-xs text-gray-500">Enterprise Admin</p>
-            </div>
-          </div>
-          {currentUser && (
-            <div className="mt-4 p-2 bg-gray-50 rounded-lg">
-              <p className="text-sm font-semibold text-gray-800">{currentUser.fullName}</p>
-              <p className="text-xs text-gray-600">{roles.find(r => r.id === currentUser.role)?.name}</p>
-              <div className="flex items-center mt-1">
-                <div className={`w-2 h-2 rounded-full mr-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span className="text-xs text-gray-600">{isOnline ? 'Conectado' : 'Sin conexión'}</span>
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Estado del Sistema Enterprise</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
+              <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+              <div>
+                <p className="font-semibold text-green-800">API Conectada</p>
+                <p className="text-sm text-green-600">GitHub Backend Activo</p>
               </div>
             </div>
-          )}
+            
+            <div className="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <RefreshCw className="w-6 h-6 text-blue-500 mr-3" />
+              <div>
+                <p className="font-semibold text-blue-800">Auto-Sync</p>
+                <p className="text-sm text-blue-600">Cada 30 segundos</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+              <Shield className="w-6 h-6 text-purple-500 mr-3" />
+              <div>
+                <p className="font-semibold text-purple-800">Datos Seguros</p>
+                <p className="text-sm text-purple-600">Encriptación HTTPS</p>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    );
+  };
 
-        <nav className="p-4">
-          <div className="space-y-2">
-            <button
-              onClick={() => setCurrentSection('dashboard')}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                currentSection === 'dashboard' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
-              }`}
+  const ProductsView = () => {
+    if (!hasPermission('products')) {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+          <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
+          <p className="text-gray-600">No tienes permisos para acceder a la gestión de productos.</p>
+        </div>
+      );
+    }
+
+    const { products, loading } = enterpriseData;
+
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <Loader className="w-8 h-8 animate-spin text-blue-500" />
+          <span className="ml-2 text-gray-900">Cargando productos desde GitHub...</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-800">Gestión de Productos Enterprise</h2>
+          <div className="flex space-x-2">
+            <button 
+              onClick={handleManualSync}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
             >
-              <BarChart3 className="w-5 h-5" />
-              <span>Dashboard</span>
-              {syncStatus === 'syncing' && currentSection === 'dashboard' && (
-                <Loader className="w-4 h-4 animate-spin ml-auto" />
-              )}
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Sync GitHub
             </button>
-            
-            {hasPermission('products') && (
-              <button
-                onClick={() => setCurrentSection('products')}
-                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                  currentSection === 'products' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Package className="w-5 h-5" />
-                <span>Productos</span>
-                <span className="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  {enterpriseData.products.products?.length || 0}
-                </span>
-              </button>
-            )}
-            
-            {hasPermission('orders') && (
-              <button
-                onClick={() => setCurrentSection('orders')}
-                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                  currentSection === 'orders' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <ShoppingCart className="w-5 h-5" />
-                <span>Pedidos</span>
-                <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  {enterpriseData.orders.orders?.length || 0}
-                </span>
-              </button>
-            )}
-            
-            {hasPermission('all') && (
-              <button
-                onClick={() => setCurrentSection('settings')}
-                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                  currentSection === 'settings' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Settings className="w-5 h-5" />
-                <span>Configuración</span>
-              </button>
-            )}
+            <button 
+              onClick={() => setShowNewProductModal(true)}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Producto
+            </button>
           </div>
-        </nav>
+        </div>
 
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="mb-4 p-2 bg-gray-50 rounded-lg text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">Última sync:</span>
-              <span className="text-gray-900">{formatTimeAgo(lastSync)}</span>
-            </div>
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-gray-600">Estado:</span>
-              <span className={`${
-                syncStatus === 'success' ? 'text-green-600' :
-                syncStatus === 'error' ? 'text-red-600' :
-                syncStatus === 'syncing' ? 'text-blue-600' :
-                'text-gray-900'
-              }`}>
-                {syncStatus === 'success' ? 'Sincronizado' :
-                 syncStatus === 'error' ? 'Error' :
-                 syncStatus === 'syncing' ? 'Sincronizando...' :
-                 'Idle'}
-              </span>
-            </div>
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">Productos Enterprise (GitHub Data)</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2">Imagen</th>
+                  <th className="text-left py-2">Producto</th>
+                  <th className="text-left py-2">SKU</th>
+                  <th className="text-left py-2">Precio</th>
+                  <th className="text-left py-2">Stock</th>
+                  <th className="text-left py-2">Ventas</th>
+                  <th className="text-left py-2">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.products?.map(product => (
+                  <tr key={product.id} className="border-b">
+                    <td className="py-2">
+                      <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                    </td>
+                    <td className="py-2">
+                      <div>
+                        <p className="font-semibold text-gray-900">{product.name}</p>
+                        <p className="text-sm text-gray-600">{product.category.name}</p>
+                      </div>
+                    </td>
+                    <td className="py-2 font-mono text-sm text-gray-900">{product.sku}</td>
+                    <td className="py-2">
+                      <div>
+                        <p className="font-semibold text-gray-900">{formatPrice(product.pricing.price)}</p>
+                        <p className="text-xs text-gray-500">Margen: {product.pricing.profitMargin}%</p>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        product.inventory.stock <= product.inventory.reorderLevel 
+                          ? 'bg-red-100 text-red-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {product.inventory.available} disponible
+                      </span>
+                      {product.inventory.stock <= product.inventory.reorderLevel && (
+                        <div className="text-xs text-red-600 mt-1">⚠️ Stock bajo</div>
+                      )}
+                    </td>
+                    <td className="py-2">
+                      <div>
+                        <p className="font-semibold text-gray-900">{product.sales.totalSold}</p>
+                        <p className="text-xs text-gray-500">{formatPrice(product.sales.revenue)}</p>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-sm text-green-600">GitHub Sync</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            <span>Cerrar Sesión</span>
-          </button>
         </div>
       </div>
+    );
+  };
 
-      {/* Main Content */}
-      <div className="ml-64 p-6">
-        {currentSection === 'dashboard' && <DashboardView />}
-        {currentSection === 'products' && <ProductsView />}
-        {currentSection === 'orders' && <OrdersView />}
-        {currentSection === 'settings' && <SettingsView />}
+  const OrdersView = () => {
+    if (!hasPermission('orders')) {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+          <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
+          <p className="text-gray-600">No tienes permisos para acceder a la gestión de pedidos.</p>
+        </div>
+      );
+    }
+
+    const { orders, loading } = enterpriseData;
+
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <Loader className="w-8 h-8 animate-spin text-blue-500" />
+          <span className="ml-2 text-gray-900">Cargando pedidos desde GitHub...</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-800">Gestión de Pedidos Enterprise</h2>
+          <div className="flex space-x-2">
+            <button 
+              onClick={handleManualSync}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Sync GitHub
+            </button>
+            <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center">
+              <Download className="w-4 h-4 mr-2" />
+              Exportar
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">Pedidos Enterprise (GitHub Data)</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2">Pedido</th>
+                  <th className="text-left py-2">Cliente</th>
+                  <th className="text-left py-2">Productos</th>
+                  <th className="text-left py-2">Total</th>
+                  <th className="text-left py-2">Estado</th>
+                  <th className="text-left py-2">Pago</th>
+                  <th className="text-left py-2">Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.orders?.map(order => (
+                  <tr key={order.id} className="border-b">
+                    <td className="py-2">
+                      <div>
+                        <p className="font-mono font-semibold text-gray-900">{order.orderNumber}</p>
+                        <p className="text-xs text-gray-500">{order.id}</p>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <div>
+                        <p className="font-semibold text-gray-900">{order.customer.fullName}</p>
+                        <p className="text-sm text-gray-600">{order.customer.email}</p>
+                        <p className="text-xs text-gray-500">{order.customer.phone}</p>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <div className="space-y-1">
+                        {order.items.map((item, index) => (
+                          <div key={index} className="text-sm">
+                            <span className="font-medium text-gray-900">{item.name}</span>
+                            <span className="text-gray-500"> x{item.quantity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <div>
+                        <p className="font-bold text-gray-900">{formatPrice(order.pricing.total)}</p>
+                        <p className="text-xs text-gray-500">
+                          Ganancia: {formatPrice(order.pricing.totalProfit)}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="py-2">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{order.payment.methodName}</p>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          order.payment.status === 'paid' ? 'bg-green-100 text-green-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {order.payment.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-2">
+                      <p className="text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-500">{new Date(order.timestamps.created).toLocaleTimeString()}</p>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+    );
+  };
 
-      {/* Modales */}
-      <EditUserModal />
-      <NewProductModal />
-    </div>
-  );
-};
+  const SettingsView = () => {
+    if (!hasPermission('all')) {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+          <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
+          <p className="text-gray-600">Solo los Super Administradores pueden acceder a la configuración.</p>
+        </div>
+      );
+    }
 
-export default BramsStoreAdmin;green-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
-                          placeholder="pagos@bramsstore.com"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-green-700 mb-2">Link PayPal.me</label>
-                        <input
-                          type="url"
-                          value={storeConfig.paymentMethods.paypal.link}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              paypal: { ...prev.paymentMethods.paypal, link: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
-                          placeholder="https://paypal.me/bramsstore"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-800">Configuración del Sistema Enterprise</h2>
+          <div className="flex gap-2">
+            <button 
+              onClick={handleManualSync}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Sync Data
+            </button>
+            <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center">
+              <Save className="w-4 h-4 mr-2" />
+              Guardar Todo
+            </button>
+          </div>
+        </div>
 
-                {/* Tarjetas */}
-                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-purple-800 flex items-center">
-                      <CreditCard className="w-5 h-5 mr-2" />
-                      Tarjetas de Crédito/Débito
-                    </h4>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={storeConfig.paymentMethods.cards.enabled}
-                        onChange={(e) => setStoreConfig(prev => ({
-                          ...prev,
-                          paymentMethods: {
-                            ...prev.paymentMethods,
-                            cards: { ...prev.paymentMethods.cards, enabled: e.target.checked }
-                          }
-                        }))}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.cards.enabled && (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-purple-700 mb-2">Procesador</label>
-                        <select
-                          value={storeConfig.paymentMethods.cards.processor}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              cards: { ...prev.paymentMethods.cards, processor: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
-                        >
-                          <option value="Stripe">Stripe</option>
-                          <option value="Square">Square</option>
-                          <option value="PayPal">PayPal</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-purple-700 mb-2">Tipos Aceptados</label>
-                        <div className="flex flex-wrap gap-2">
-                          {['Visa', 'Mastercard', 'American Express', 'Diners'].map(card => (
-                            <label key={card} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                checked={storeConfig.paymentMethods.cards.types.includes(card)}
-                                onChange={(e) => {
-                                  const types = e.target.checked
-                                    ? [...storeConfig.paymentMethods.cards.types, card]
-                                    : storeConfig.paymentMethods.cards.types.filter(t => t !== card);
-                                  setStoreConfig(prev => ({
-                                    ...prev,
-                                    paymentMethods: {
-                                      ...prev.paymentMethods,
-                                      cards: { ...prev.paymentMethods.cards, types }
-                                    }
-                                  }));
-                                }}
-                                className="mr-2"
-                              />
-                              <span className="text-sm text-purple-700">{card}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+        <div className="bg-white rounded-xl shadow-lg">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              {[
+                { id: 'store', name: 'Tienda', icon: Store },
+                { id: 'users', name: 'Usuarios', icon: Users },
+                { id: 'notifications', name: 'Notificaciones', icon: Bell },
+                { id: 'payments', name: 'Pagos', icon: CreditCard },
+                { id: 'security', name: 'Seguridad', icon: Key }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setConfigTab(tab.id)}
+                    className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
+                      configTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.name}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
 
-                {/* Transferencia Bancaria */}
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-yellow-800 flex items-center">
-                      <User className="w-5 h-5 mr-2" />
-                      Transferencia Bancaria
-                    </h4>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={storeConfig.paymentMethods.bankTransfer.enabled}
-                        onChange={(e) => setStoreConfig(prev => ({
-                          ...prev,
-                          paymentMethods: {
-                            ...prev.paymentMethods,
-                            bankTransfer: { ...prev.paymentMethods.bankTransfer, enabled: e.target.checked }
-                          }
-                        }))}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.bankTransfer.enabled && (
-                    <div className="space-y-4">
-                      {storeConfig.paymentMethods.bankTransfer.accounts.map((account, index) => (
-                        <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-white rounded border">
-                          <div>
-                            <label className="block text-sm font-medium text-yellow-700 mb-1">Banco</label>
-                            <input
-                              type="text"
-                              value={account.bank}
-                              onChange={(e) => {
-                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
-                                accounts[index] = { ...accounts[index], bank: e.target.value };
-                                setStoreConfig(prev => ({
-                                  ...prev,
-                                  paymentMethods: {
-                                    ...prev.paymentMethods,
-                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
-                                  }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
-                              placeholder="BAC"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-yellow-700 mb-1">IBAN</label>
-                            <input
-                              type="text"
-                              value={account.iban}
-                              onChange={(e) => {
-                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
-                                accounts[index] = { ...accounts[index], iban: e.target.value };
-                                setStoreConfig(prev => ({
-                                  ...prev,
-                                  paymentMethods: {
-                                    ...prev.paymentMethods,
-                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
-                                  }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
-                              placeholder="CR12345678901234567890"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-yellow-700 mb-1">Cuenta</label>
-                            <input
-                              type="text"
-                              value={account.account}
-                              onChange={(e) => {
-                                const accounts = [...storeConfig.paymentMethods.bankTransfer.accounts];
-                                accounts[index] = { ...accounts[index], account: e.target.value };
-                                setStoreConfig(prev => ({
-                                  ...prev,
-                                  paymentMethods: {
-                                    ...prev.paymentMethods,
-                                    bankTransfer: { ...prev.paymentMethods.bankTransfer, accounts }
-                                  }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-500 text-gray-900"
-                              placeholder="123456789"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Tab de Seguridad */}
-            {configTab === 'security' && (
+          <div className="p-6">
+            {configTab === 'store' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Configuración de Seguridad Enterprise</h3>
+                <h3 className="text-lg font-bold text-gray-800">Configuración de la Tienda Enterprise</h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Tokens de API */}
-                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                    <h4 className="font-semibold text-red-800 mb-4 flex items-center">
-                      <Key className="w-5 h-5 mr-2" />
-                      Tokens de API
-                    </h4>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-red-700 mb-2">GitHub Token</label>
-                        <input
-                          type="password"
-                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
-                        />
-                        <p className="text-xs text-red-600 mt-1">Para actualizaciones automáticas de productos</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-red-700 mb-2">PayPal API Key</label>
-                        <input
-                          type="password"
-                          placeholder="sk_live_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
-                        />
-                      </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-800 mb-4">Información Básica</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de la Tienda</label>
+                      <input
+                        type="text"
+                        value={storeConfig.storeName}
+                        onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      />
                     </div>
-                  </div>
-
-                  {/* Configuraciones de seguridad */}
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
-                      <Shield className="w-5 h-5 mr-2" />
-                      Configuraciones de Seguridad
-                    </h4>
-                    <div className="space-y-3">
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Autenticación de dos factores</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Logs de actividad detallados</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Backup automático diario</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="checkbox" className="mr-3" />
-                        <span className="text-sm text-gray-700">Bloqueo de IP sospechosas</span>
-                      </label>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email de Contacto</label>
+                      <input
+                        type="email"
+                        value={storeConfig.email}
+                        onChange={(e) => setStoreConfig(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      />
                     </div>
-                  </div>
-                </div>
-
-                {/* Estado del sistema */}
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-green-800 mb-4">Estado del Sistema de Seguridad</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="flex items-center p-3 bg-white rounded border">
-                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-green-800">SSL Activo</p>
-                        <p className="text-sm text-green-600">Certificado válido</p>
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono Principal</label>
+                      <input
+                        type="tel"
+                        value={storeConfig.phone}
+                        onChange={(e) => setStoreConfig(prev => ({ ...prev, phone: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      />
                     </div>
-                    <div className="flex items-center p-3 bg-white rounded border">
-                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-green-800">Firewall Activo</p>
-                        <p className="text-sm text-green-600">Protección completa</p>
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
+                      <input
+                        type="tel"
+                        value={storeConfig.whatsapp}
+                        onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsapp: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      />
                     </div>
-                    <div className="flex items-center p-3 bg-white rounded border">
-                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-green-800">Backups OK</p>
-                        <p className="text-sm text-green-600">Último: Hoy</p>
-                      </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Dirección Completa</label>
+                      <input
+                        type="text"
+                        value={storeConfig.addressComplete}
+                        onChange={(e) => setStoreConfig(prev => ({ ...prev, addressComplete: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Tab de Usuarios */}
+            {configTab === 'payments' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-gray-800">Métodos de Pago Enterprise</h3>
+                
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-blue-800 flex items-center">
+                      <Phone className="w-5 h-5 mr-2" />
+                      SINPE Móvil
+                    </h4>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={storeConfig.paymentMethods.sinpe.enabled}
+                        onChange={(e) => setStoreConfig(prev => ({
+                          ...prev,
+                          paymentMethods: {
+                            ...prev.paymentMethods,
+                            sinpe: { ...prev.paymentMethods.sinpe, enabled: e.target.checked }
+                          }
+                        }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                  
+                  {storeConfig.paymentMethods.sinpe.enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-blue-700 mb-2">Número SINPE</label>
+                        <input
+                          type="tel"
+                          value={storeConfig.paymentMethods.sinpe.phone}
+                          onChange={(e) => setStoreConfig(prev => ({
+                            ...prev,
+                            paymentMethods: {
+                              ...prev.paymentMethods,
+                              sinpe: { ...prev.paymentMethods.sinpe, phone: e.target.value }
+                            }
+                          }))}
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          placeholder="+506 8888-8888"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-blue-700 mb-2">Nombre Titular</label>
+                        <input
+                          type="text"
+                          value={storeConfig.paymentMethods.sinpe.name}
+                          onChange={(e) => setStoreConfig(prev => ({
+                            ...prev,
+                            paymentMethods: {
+                              ...prev.paymentMethods,
+                              sinpe: { ...prev.paymentMethods.sinpe, name: e.target.value }
+                            }
+                          }))}
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          placeholder="BramsStore S.A."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-blue-700 mb-2">Cédula</label>
+                        <input
+                          type="text"
+                          value={storeConfig.paymentMethods.sinpe.cedula}
+                          onChange={(e) => setStoreConfig(prev => ({
+                            ...prev,
+                            paymentMethods: {
+                              ...prev.paymentMethods,
+                              sinpe: { ...prev.paymentMethods.sinpe, cedula: e.target.value }
+                            }
+                          }))}
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          placeholder="3-101-XXXXXX"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {configTab === 'users' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
@@ -615,7 +563,92 @@ export default BramsStoreAdmin;green-300 rounded-lg focus:ring-2 focus:ring-gree
               </div>
             )}
 
-            {/* Tab de Notificaciones */}
+            {configTab === 'security' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-gray-800">Configuración de Seguridad Enterprise</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h4 className="font-semibold text-red-800 mb-4 flex items-center">
+                      <Key className="w-5 h-5 mr-2" />
+                      Tokens de API
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-red-700 mb-2">GitHub Token</label>
+                        <input
+                          type="password"
+                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
+                        />
+                        <p className="text-xs text-red-600 mt-1">Para actualizaciones automáticas de productos</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-red-700 mb-2">PayPal API Key</label>
+                        <input
+                          type="password"
+                          placeholder="sk_live_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
+                      <Shield className="w-5 h-5 mr-2" />
+                      Configuraciones de Seguridad
+                    </h4>
+                    <div className="space-y-3">
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" defaultChecked />
+                        <span className="text-sm text-gray-700">Autenticación de dos factores</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" defaultChecked />
+                        <span className="text-sm text-gray-700">Logs de actividad detallados</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" defaultChecked />
+                        <span className="text-sm text-gray-700">Backup automático diario</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="checkbox" className="mr-3" />
+                        <span className="text-sm text-gray-700">Bloqueo de IP sospechosas</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-green-800 mb-4">Estado del Sistema de Seguridad</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex items-center p-3 bg-white rounded border">
+                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-green-800">SSL Activo</p>
+                        <p className="text-sm text-green-600">Certificado válido</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center p-3 bg-white rounded border">
+                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-green-800">Firewall Activo</p>
+                        <p className="text-sm text-green-600">Protección completa</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center p-3 bg-white rounded border">
+                      <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-green-800">Backups OK</p>
+                        <p className="text-sm text-green-600">Último: Hoy</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {configTab === 'notifications' && (
               <div className="space-y-6">
                 <h3 className="text-lg font-bold text-gray-800">Sistema de Notificaciones Enterprise</h3>
@@ -633,7 +666,6 @@ export default BramsStoreAdmin;green-300 rounded-lg focus:ring-2 focus:ring-gree
     );
   };
 
-  // Modal de nuevo producto
   const NewProductModal = () => showNewProductModal && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -786,7 +818,6 @@ export default BramsStoreAdmin;green-300 rounded-lg focus:ring-2 focus:ring-gree
     </div>
   );
 
-  // Modal de edición de usuario
   const EditUserModal = () => editingUser && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -864,588 +895,207 @@ export default BramsStoreAdmin;green-300 rounded-lg focus:ring-2 focus:ring-gree
               <select
                 value={editingUser.status}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-4 py-2 border border-        {/* Productos más vendidos */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
-          <div className="space-y-4">
-            {products.products?.sort((a, b) => b.sales.totalSold - a.sales.totalSold).slice(0, 5).map(product => (
-              <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                <div className="flex items-center space-x-4">
-                  <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
-                  <div>
-                    <p className="font-semibold text-gray-900">{product.name}</p>
-                    <p className="text-sm text-gray-600">{product.sales.totalSold} ventas • SKU: {product.sku}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-green-600">{formatPrice(product.sales.revenue)}</p>
-                  <p className="text-sm text-gray-500">Rating: {product.sales.averageRating}⭐</p>
-                </div>
-              </div>
-            ))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                disabled={editingUser.id === 1}
+              >
+                <option value="active">✅ Activo - Puede acceder al sistema</option>
+                <option value="inactive">❌ Inactivo - Acceso bloqueado</option>
+              </select>
+              {editingUser.id === 1 && (
+                <p className="text-xs text-gray-500 mt-1">El super admin siempre está activo</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">Permisos del Rol Seleccionado:</h4>
+            <div className="text-sm text-blue-700">
+              {(() => {
+                const role = roles.find(r => r.id === editingUser.role);
+                if (role?.id === 'super_admin') return '🔓 Acceso completo a todo el sistema';
+                if (role?.id === 'admin') return '📦 Productos, Pedidos, Clientes, Reportes';
+                if (role?.id === 'editor') return '✏️ Solo edición de productos';
+                if (role?.id === 'viewer') return '👁️ Solo lectura del dashboard';
+                return 'Permisos limitados';
+              })()}
+            </div>
           </div>
         </div>
+        
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={handleUpdateUser}
+            className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            Guardar Cambios
+          </button>
+          <button
+            onClick={() => setEditingUser(null)}
+            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
-        {/* Status del sistema */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Estado del Sistema Enterprise</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
-              <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
-              <div>
-                <p className="font-semibold text-green-800">API Conectada</p>
-                <p className="text-sm text-green-600">GitHub Backend Activo</p>
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        {notifications.map(notification => (
+          <div
+            key={notification.id}
+            className={`px-4 py-3 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 ${
+              notification.type === 'success' ? 'bg-green-500 text-white' :
+              notification.type === 'error' ? 'bg-red-500 text-white' :
+              notification.type === 'warning' ? 'bg-yellow-500 text-white' :
+              'bg-blue-500 text-white'
+            }`}
+          >
+            <div className="flex items-center">
+              {notification.type === 'success' && <CheckCircle className="w-5 h-5 mr-2" />}
+              {notification.type === 'error' && <AlertTriangle className="w-5 h-5 mr-2" />}
+              {notification.type === 'warning' && <AlertTriangle className="w-5 h-5 mr-2" />}
+              {notification.type === 'info' && <Bell className="w-5 h-5 mr-2" />}
+              <span className="text-sm font-medium">{notification.message}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-30">
+        <div className="p-6 border-b">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
+              <ShoppingCart className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold">
+                <span className="text-blue-600">Brams</span>
+                <span className="text-orange-500">Store</span>
+              </h1>
+              <p className="text-xs text-gray-500">Enterprise Admin</p>
+            </div>
+          </div>
+          {currentUser && (
+            <div className="mt-4 p-2 bg-gray-50 rounded-lg">
+              <p className="text-sm font-semibold text-gray-800">{currentUser.fullName}</p>
+              <p className="text-xs text-gray-600">{roles.find(r => r.id === currentUser.role)?.name}</p>
+              <div className="flex items-center mt-1">
+                <div className={`w-2 h-2 rounded-full mr-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className="text-xs text-gray-600">{isOnline ? 'Conectado' : 'Sin conexión'}</span>
               </div>
             </div>
+          )}
+        </div>
+
+        <nav className="p-4">
+          <div className="space-y-2">
+            <button
+              onClick={() => setCurrentSection('dashboard')}
+              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                currentSection === 'dashboard' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span>Dashboard</span>
+              {syncStatus === 'syncing' && currentSection === 'dashboard' && (
+                <Loader className="w-4 h-4 animate-spin ml-auto" />
+              )}
+            </button>
             
-            <div className="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <RefreshCw className="w-6 h-6 text-blue-500 mr-3" />
-              <div>
-                <p className="font-semibold text-blue-800">Auto-Sync</p>
-                <p className="text-sm text-blue-600">Cada 30 segundos</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center p-4 bg-purple-50 rounded-lg border border-purple-200">
-              <Shield className="w-6 h-6 text-purple-500 mr-3" />
-              <div>
-                <p className="font-semibold text-purple-800">Datos Seguros</p>
-                <p className="text-sm text-purple-600">Encriptación HTTPS</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Vista de productos enterprise
-  const ProductsView = () => {
-    if (!hasPermission('products')) {
-      return (
-        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
-          <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
-          <p className="text-gray-600">No tienes permisos para acceder a la gestión de productos.</p>
-        </div>
-      );
-    }
-
-    const { products, loading } = enterpriseData;
-
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center h-64">
-          <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-900">Cargando productos desde GitHub...</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Gestión de Productos Enterprise</h2>
-          <div className="flex space-x-2">
-            <button 
-              onClick={handleManualSync}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Sync GitHub
-            </button>
-            <button 
-              onClick={() => setShowNewProductModal(true)}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Producto
-            </button>
-          </div>
-        </div>
-
-        {/* Lista de productos desde GitHub */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Productos Enterprise (GitHub Data)</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2">Imagen</th>
-                  <th className="text-left py-2">Producto</th>
-                  <th className="text-left py-2">SKU</th>
-                  <th className="text-left py-2">Precio</th>
-                  <th className="text-left py-2">Stock</th>
-                  <th className="text-left py-2">Ventas</th>
-                  <th className="text-left py-2">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.products?.map(product => (
-                  <tr key={product.id} className="border-b">
-                    <td className="py-2">
-                      <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
-                    </td>
-                    <td className="py-2">
-                      <div>
-                        <p className="font-semibold text-gray-900">{product.name}</p>
-                        <p className="text-sm text-gray-600">{product.category.name}</p>
-                      </div>
-                    </td>
-                    <td className="py-2 font-mono text-sm text-gray-900">{product.sku}</td>
-                    <td className="py-2">
-                      <div>
-                        <p className="font-semibold text-gray-900">{formatPrice(product.pricing.price)}</p>
-                        <p className="text-xs text-gray-500">Margen: {product.pricing.profitMargin}%</p>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        product.inventory.stock <= product.inventory.reorderLevel 
-                          ? 'bg-red-100 text-red-800' 
-                          : 'bg-green-100 text-green-800'
-                      }`}>
-                        {product.inventory.available} disponible
-                      </span>
-                      {product.inventory.stock <= product.inventory.reorderLevel && (
-                        <div className="text-xs text-red-600 mt-1">⚠️ Stock bajo</div>
-                      )}
-                    </td>
-                    <td className="py-2">
-                      <div>
-                        <p className="font-semibold text-gray-900">{product.sales.totalSold}</p>
-                        <p className="text-xs text-gray-500">{formatPrice(product.sales.revenue)}</p>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-sm text-green-600">GitHub Sync</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Vista de pedidos enterprise
-  const OrdersView = () => {
-    if (!hasPermission('orders')) {
-      return (
-        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
-          <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
-          <p className="text-gray-600">No tienes permisos para acceder a la gestión de pedidos.</p>
-        </div>
-      );
-    }
-
-    const { orders, loading } = enterpriseData;
-
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center h-64">
-          <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-900">Cargando pedidos desde GitHub...</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Gestión de Pedidos Enterprise</h2>
-          <div className="flex space-x-2">
-            <button 
-              onClick={handleManualSync}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Sync GitHub
-            </button>
-            <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center">
-              <Download className="w-4 h-4 mr-2" />
-              Exportar
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Pedidos Enterprise (GitHub Data)</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2">Pedido</th>
-                  <th className="text-left py-2">Cliente</th>
-                  <th className="text-left py-2">Productos</th>
-                  <th className="text-left py-2">Total</th>
-                  <th className="text-left py-2">Estado</th>
-                  <th className="text-left py-2">Pago</th>
-                  <th className="text-left py-2">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.orders?.map(order => (
-                  <tr key={order.id} className="border-b">
-                    <td className="py-2">
-                      <div>
-                        <p className="font-mono font-semibold text-gray-900">{order.orderNumber}</p>
-                        <p className="text-xs text-gray-500">{order.id}</p>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <div>
-                        <p className="font-semibold text-gray-900">{order.customer.fullName}</p>
-                        <p className="text-sm text-gray-600">{order.customer.email}</p>
-                        <p className="text-xs text-gray-500">{order.customer.phone}</p>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <div className="space-y-1">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="text-sm">
-                            <span className="font-medium text-gray-900">{item.name}</span>
-                            <span className="text-gray-500"> x{item.quantity}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <div>
-                        <p className="font-bold text-gray-900">{formatPrice(order.pricing.total)}</p>
-                        <p className="text-xs text-gray-500">
-                          Ganancia: {formatPrice(order.pricing.totalProfit)}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-2">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{order.payment.methodName}</p>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          order.payment.status === 'paid' ? 'bg-green-100 text-green-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {order.payment.status}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <p className="text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</p>
-                      <p className="text-xs text-gray-500">{new Date(order.timestamps.created).toLocaleTimeString()}</p>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Vista de configuración MEJORADA
-  const SettingsView = () => {
-    if (!hasPermission('all')) {
-      return (
-        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
-          <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
-          <p className="text-gray-600">Solo los Super Administradores pueden acceder a la configuración.</p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Configuración del Sistema Enterprise</h2>
-          <div className="flex gap-2">
-            <button 
-              onClick={handleManualSync}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Sync Data
-            </button>
-            <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center">
-              <Save className="w-4 h-4 mr-2" />
-              Guardar Todo
-            </button>
-          </div>
-        </div>
-
-        {/* Tabs de configuración */}
-        <div className="bg-white rounded-xl shadow-lg">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'store', name: 'Tienda', icon: Store },
-                { id: 'users', name: 'Usuarios', icon: Users },
-                { id: 'notifications', name: 'Notificaciones', icon: Bell },
-                { id: 'payments', name: 'Pagos', icon: CreditCard },
-                { id: 'security', name: 'Seguridad', icon: Key }
-              ].map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setConfigTab(tab.id)}
-                    className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
-                      configTab === tab.id
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.name}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          <div className="p-6">
-            {/* Tab de Tienda */}
-            {configTab === 'store' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Configuración de la Tienda Enterprise</h3>
-                
-                {/* Información básica */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-4">Información Básica</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de la Tienda</label>
-                      <input
-                        type="text"
-                        value={storeConfig.storeName}
-                        onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email de Contacto</label>
-                      <input
-                        type="email"
-                        value={storeConfig.email}
-                        onChange={(e) => setStoreConfig(prev => ({ ...prev, email: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono Principal</label>
-                      <input
-                        type="tel"
-                        value={storeConfig.phone}
-                        onChange={(e) => setStoreConfig(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
-                      <input
-                        type="tel"
-                        value={storeConfig.whatsapp}
-                        onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsapp: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Dirección Completa</label>
-                      <input
-                        type="text"
-                        value={storeConfig.addressComplete}
-                        onChange={(e) => setStoreConfig(prev => ({ ...prev, addressComplete: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Horarios */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-4">Horarios de Atención</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(storeConfig.businessHours).map(([day, hours]) => (
-                      <div key={day}>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                          {day === 'monday' ? 'Lunes' :
-                           day === 'tuesday' ? 'Martes' :
-                           day === 'wednesday' ? 'Miércoles' :
-                           day === 'thursday' ? 'Jueves' :
-                           day === 'friday' ? 'Viernes' :
-                           day === 'saturday' ? 'Sábado' : 'Domingo'}
-                        </label>
-                        <input
-                          type="text"
-                          value={hours}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            businessHours: { ...prev.businessHours, [day]: e.target.value }
-                          }))}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="8:00 AM - 6:00 PM"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Redes sociales */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-4">Redes Sociales</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(storeConfig.socialMedia).map(([platform, url]) => (
-                      <div key={platform}>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                          {platform === 'facebook' ? 'Facebook' :
-                           platform === 'instagram' ? 'Instagram' :
-                           platform === 'tiktok' ? 'TikTok' : 'YouTube'}
-                        </label>
-                        <input
-                          type="url"
-                          value={url}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            socialMedia: { ...prev.socialMedia, [platform]: e.target.value }
-                          }))}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder={`https://${platform}.com/bramsstore`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            {hasPermission('products') && (
+              <button
+                onClick={() => setCurrentSection('products')}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  currentSection === 'products' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Package className="w-5 h-5" />
+                <span>Productos</span>
+                <span className="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                  {enterpriseData.products.products?.length || 0}
+                </span>
+              </button>
             )}
+            
+            {hasPermission('orders') && (
+              <button
+                onClick={() => setCurrentSection('orders')}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  currentSection === 'orders' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span>Pedidos</span>
+                <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  {enterpriseData.orders.orders?.length || 0}
+                </span>
+              </button>
+            )}
+            
+            {hasPermission('all') && (
+              <button
+                onClick={() => setCurrentSection('settings')}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  currentSection === 'settings' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Settings className="w-5 h-5" />
+                <span>Configuración</span>
+              </button>
+            )}
+          </div>
+        </nav>
 
-            {/* Tab de Pagos */}
-            {configTab === 'payments' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Métodos de Pago Enterprise</h3>
-                
-                {/* SINPE Móvil */}
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-blue-800 flex items-center">
-                      <Phone className="w-5 h-5 mr-2" />
-                      SINPE Móvil
-                    </h4>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={storeConfig.paymentMethods.sinpe.enabled}
-                        onChange={(e) => setStoreConfig(prev => ({
-                          ...prev,
-                          paymentMethods: {
-                            ...prev.paymentMethods,
-                            sinpe: { ...prev.paymentMethods.sinpe, enabled: e.target.checked }
-                          }
-                        }))}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.sinpe.enabled && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-blue-700 mb-2">Número SINPE</label>
-                        <input
-                          type="tel"
-                          value={storeConfig.paymentMethods.sinpe.phone}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              sinpe: { ...prev.paymentMethods.sinpe, phone: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="+506 8888-8888"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-blue-700 mb-2">Nombre Titular</label>
-                        <input
-                          type="text"
-                          value={storeConfig.paymentMethods.sinpe.name}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              sinpe: { ...prev.paymentMethods.sinpe, name: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="BramsStore S.A."
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-blue-700 mb-2">Cédula</label>
-                        <input
-                          type="text"
-                          value={storeConfig.paymentMethods.sinpe.cedula}
-                          onChange={(e) => setStoreConfig(prev => ({
-                            ...prev,
-                            paymentMethods: {
-                              ...prev.paymentMethods,
-                              sinpe: { ...prev.paymentMethods.sinpe, cedula: e.target.value }
-                            }
-                          }))}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="3-101-XXXXXX"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+        <div className="absolute bottom-4 left-4 right-4">
+          <div className="mb-4 p-2 bg-gray-50 rounded-lg text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Última sync:</span>
+              <span className="text-gray-900">{formatTimeAgo(lastSync)}</span>
+            </div>
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-gray-600">Estado:</span>
+              <span className={`${
+                syncStatus === 'success' ? 'text-green-600' :
+                syncStatus === 'error' ? 'text-red-600' :
+                syncStatus === 'syncing' ? 'text-blue-600' :
+                'text-gray-900'
+              }`}>
+                {syncStatus === 'success' ? 'Sincronizado' :
+                 syncStatus === 'error' ? 'Error' :
+                 syncStatus === 'syncing' ? 'Sincronizando...' :
+                 'Idle'}
+              </span>
+            </div>
+          </div>
+          
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </div>
 
-                {/* PayPal */}
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-green-800 flex items-center">
-                      <Globe className="w-5 h-5 mr-2" />
-                      PayPal
-                    </h4>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={storeConfig.paymentMethods.paypal.enabled}
-                        onChange={(e) => setStoreConfig(prev => ({
-                          ...prev,
-                          paymentMethods: {
-                            ...prev.paymentMethods,
-                            paypal: { ...prev.paymentMethods.paypal, enabled: e.target.checked }
-                          }
-                        }))}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                    </label>
-                  </div>
-                  
-                  {storeConfig.paymentMethods.paypal.enabled && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-green-700 import React, { useState, useEffect, useCallback } from 'react';
+      <div className="ml-64 p-6">
+        {currentSection === 'dashboard' && <DashboardView />}
+        {currentSection === 'products' && <ProductsView />}
+        {currentSection === 'orders' && <OrdersView />}
+        {currentSection === 'settings' && <SettingsView />}
+      </div>
+
+      <EditUserModal />
+      <NewProductModal />
+    </div>
+  );
+};
+
+export default BramsStoreAdmin;import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BarChart3, 
   Package, 
@@ -1457,7 +1107,7 @@ import {
   Trash2, 
   Eye, 
   DollarSign, 
-  TrendingUp, 
+  TrendingUp,
   LogOut,
   Upload,
   Save,
@@ -2068,7 +1718,6 @@ const BramsStoreAdmin = () => {
 
     return (
       <div className="space-y-6">
-        {/* Header con controles de sync */}
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">Dashboard Enterprise</h2>
           <div className="flex items-center space-x-4">
@@ -2101,7 +1750,6 @@ const BramsStoreAdmin = () => {
           </div>
         </div>
 
-        {/* Estadísticas principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
             <div className="flex items-center justify-between">
@@ -2148,7 +1796,6 @@ const BramsStoreAdmin = () => {
           </div>
         </div>
 
-        {/* Pedidos recientes */}
         {hasPermission('orders') && (
           <div className="bg-white p-6 rounded-xl shadow-lg">
             <h3 className="text-xl font-bold text-gray-800 mb-4">Pedidos Recientes (GitHub Data)</h3>
@@ -2195,8 +1842,12 @@ const BramsStoreAdmin = () => {
           </div>
         )}
 
-        {/* Productos más vendidos */}
         <div className="bg-white p-6 rounded-xl shadow-lg">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
           <div className="space-y-4">
-            {products.products?.sort((a, b) => b.sales.totalSold - a.sales.total
+            {products.products?.sort((a, b) => b.sales.totalSold - a.sales.totalSold).slice(0, 5).map(product => (
+              <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center space-x-4">
+                  <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                  <div>
+                    <p className="font-semibold text-gray
