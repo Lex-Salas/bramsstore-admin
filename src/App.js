@@ -101,10 +101,9 @@ const BramsStoreAdmin = () => {
     }
   ]);
 
-  // Estado para nuevo producto
-  const [showNewProductModal, setShowNewProductModal] = useState(false);
-  const [showEditProductModal, setShowEditProductModal] = useState(false);
-  const [newProduct, setNewProduct] = useState({
+  // Estado para productos
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({
     name: '',
     category: 'smartphones', 
     price: '',
@@ -113,9 +112,9 @@ const BramsStoreAdmin = () => {
     description: '',
     stock: '',
     featured: false,
-    sku: ''
+    sku: '',
+    id: null
   });
-  const [editingProduct, setEditingProduct] = useState(null);
 
   // Configuración de la tienda MEJORADA
   const [storeConfig, setStoreConfig] = useState({
@@ -439,54 +438,78 @@ const BramsStoreAdmin = () => {
     }
   };
 
-  // Función para agregar producto
-  const handleAddProduct = () => {
-    if (!newProduct.name || !newProduct.price || !newProduct.sku) {
+  // Función para agregar o actualizar producto
+  const handleSaveProduct = () => {
+    if (!currentProduct.name || !currentProduct.price || !currentProduct.sku) {
       addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
       return;
     }
 
     const product = {
-      id: `prod_${Date.now()}`,
-      sku: newProduct.sku,
-      name: newProduct.name,
-      description: newProduct.description,
+      id: currentProduct.id || `prod_${Date.now()}`,
+      sku: currentProduct.sku,
+      name: currentProduct.name,
+      description: currentProduct.description,
       category: { 
-        id: newProduct.category, 
-        name: categories.find(c => c.id === newProduct.category)?.name || 'Otros'
+        id: currentProduct.category, 
+        name: categories.find(c => c.id === currentProduct.category)?.name || 'Otros'
       },
       pricing: { 
-        price: parseInt(newProduct.price), 
-        cost: parseInt(newProduct.cost || '0'),
-        profitMargin: newProduct.cost ? ((parseInt(newProduct.price) - parseInt(newProduct.cost)) / parseInt(newProduct.price) * 100).toFixed(1) : 0
+        price: parseInt(currentProduct.price), 
+        cost: parseInt(currentProduct.cost || '0'),
+        profitMargin: currentProduct.cost ? ((parseInt(currentProduct.price) - parseInt(currentProduct.cost)) / parseInt(currentProduct.price) * 100).toFixed(1) : 0
       },
       inventory: { 
-        stock: parseInt(newProduct.stock || '0'), 
-        available: parseInt(newProduct.stock || '0'),
+        stock: parseInt(currentProduct.stock || '0'), 
+        available: parseInt(currentProduct.stock || '0'),
         reorderLevel: 5
       },
       media: { 
-        primaryImage: newProduct.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=500&fit=crop'
+        primaryImage: currentProduct.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=500&fit=crop'
       },
-      sales: { 
+      sales: currentProduct.id ? enterpriseData.products.products.find(p => p.id === currentProduct.id)?.sales || { totalSold: 0, averageRating: 0, revenue: 0 } : { 
         totalSold: 0, 
         averageRating: 0,
         revenue: 0
       },
       status: { 
-        featured: newProduct.featured 
+        featured: currentProduct.featured 
       },
       timestamps: {
-        created: new Date().toISOString(),
+        created: currentProduct.id ? enterpriseData.products.products.find(p => p.id === currentProduct.id)?.timestamps.created || new Date().toISOString() : new Date().toISOString(),
         updated: new Date().toISOString()
       }
     };
 
-    console.log('Nuevo producto creado:', product);
-    addNotification('success', `Producto "${newProduct.name}" creado exitosamente`);
+    if (currentProduct.id) {
+      // Actualizar producto existente
+      setEnterpriseData(prev => {
+        const updatedProducts = prev.products.products.map(p => 
+          p.id === currentProduct.id ? product : p
+        );
+        return {
+          ...prev,
+          products: {
+            ...prev.products,
+            products: updatedProducts
+          }
+        };
+      });
+      addNotification('success', `Producto "${currentProduct.name}" actualizado exitosamente`);
+    } else {
+      // Agregar nuevo producto
+      setEnterpriseData(prev => ({
+        ...prev,
+        products: {
+          ...prev.products,
+          products: [...prev.products.products, product]
+        }
+      }));
+      addNotification('success', `Producto "${currentProduct.name}" creado exitosamente`);
+    }
     
     // Limpiar formulario y cerrar modal
-    setNewProduct({
+    setCurrentProduct({
       name: '',
       category: 'smartphones',
       price: '',
@@ -495,58 +518,27 @@ const BramsStoreAdmin = () => {
       description: '',
       stock: '',
       featured: false,
-      sku: ''
+      sku: '',
+      id: null
     });
-    setShowNewProductModal(false);
-    
-    // Recargar datos
-    loadEnterpriseData();
+    setShowProductModal(false);
   };
 
-  // Función para iniciar edición de producto
+  // Abrir modal para editar producto
   const handleEditProduct = (product) => {
-    setEditingProduct({
-      id: product.id,
+    setCurrentProduct({
       name: product.name,
       category: product.category.id,
       price: product.pricing.price.toString(),
-      cost: product.pricing.cost?.toString() || '',
+      cost: product.pricing.cost ? product.pricing.cost.toString() : '',
       image: product.media.primaryImage,
-      description: product.description || '',
+      description: product.description,
       stock: product.inventory.stock.toString(),
-      featured: product.status?.featured || false,
-      sku: product.sku
+      featured: product.status.featured,
+      sku: product.sku,
+      id: product.id
     });
-    setShowEditProductModal(true);
-  };
-
-  // Función para actualizar producto
-  const handleUpdateProduct = () => {
-    if (!editingProduct.name || !editingProduct.price || !editingProduct.sku) {
-      addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
-      return;
-    }
-
-    console.log('Producto actualizado:', editingProduct);
-    addNotification('success', `Producto "${editingProduct.name}" actualizado exitosamente`);
-    
-    // Cerrar modal
-    setShowEditProductModal(false);
-    setEditingProduct(null);
-    
-    // Recargar datos
-    loadEnterpriseData();
-  };
-
-  // Función para eliminar producto
-  const handleDeleteProduct = (productId, productName) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar el producto "${productName}"?`)) {
-      console.log('Producto eliminado:', productId);
-      addNotification('success', `Producto "${productName}" eliminado exitosamente`);
-      
-      // Recargar datos
-      loadEnterpriseData();
-    }
+    setShowProductModal(true);
   };
 
   // Funciones de usuarios
@@ -613,7 +605,7 @@ const BramsStoreAdmin = () => {
                 placeholder="Usuario"
                 value={loginForm.username}
                 onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder-gray-500"
                 required
               />
               <input
@@ -621,7 +613,7 @@ const BramsStoreAdmin = () => {
                 placeholder="Contraseña"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder-gray-500"
                 required
               />
               <button
@@ -645,7 +637,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-900">Cargando datos enterprise...</span>
+          <span className="ml-2 text-black">Cargando datos enterprise...</span>
         </div>
       );
     }
@@ -669,7 +661,7 @@ const BramsStoreAdmin = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Dashboard Enterprise</h2>
+          <h2 className="text-2xl font-bold text-black">Dashboard Enterprise</h2>
           <div className="flex items-center space-x-4">
             <div className="flex items-center text-sm text-gray-600">
               {isOnline ? (
@@ -677,12 +669,12 @@ const BramsStoreAdmin = () => {
               ) : (
                 <WifiOff className="w-4 h-4 text-red-500 mr-1" />
               )}
-              <span className="text-gray-900">{isOnline ? 'Online' : 'Offline'}</span>
+              <span className="text-black">{isOnline ? 'Online' : 'Offline'}</span>
             </div>
             
             <div className="flex items-center text-sm text-gray-600">
               <Clock className="w-4 h-4 mr-1" />
-              <span className="text-gray-900">Última sync: {formatTimeAgo(lastSync)}</span>
+              <span className="text-black">Última sync: {formatTimeAgo(lastSync)}</span>
             </div>
             
             <button
@@ -695,7 +687,7 @@ const BramsStoreAdmin = () => {
               }`}
             >
               <RefreshCw className={`w-4 h-4 mr-1 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
-              <span className="text-gray-900">{syncStatus === 'syncing' ? 'Sincronizando...' : 'Sincronizar'}</span>
+              <span className="text-black">{syncStatus === 'syncing' ? 'Sincronizando...' : 'Sincronizar'}</span>
             </button>
           </div>
         </div>
@@ -748,7 +740,7 @@ const BramsStoreAdmin = () => {
 
         {hasPermission('orders') && (
           <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Pedidos Recientes (GitHub Data)</h3>
+            <h3 className="text-xl font-bold text-black mb-4">Pedidos Recientes (GitHub Data)</h3>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -764,9 +756,9 @@ const BramsStoreAdmin = () => {
                 <tbody>
                   {orders.orders?.slice(0, 5).map(order => (
                     <tr key={order.id} className="border-b">
-                      <td className="py-2 font-mono text-sm text-gray-900">{order.orderNumber}</td>
-                      <td className="py-2 text-gray-900">{order.customer.fullName}</td>
-                      <td className="py-2 font-semibold text-gray-900">{formatPrice(order.pricing.total)}</td>
+                      <td className="py-2 font-mono text-sm text-black">{order.orderNumber}</td>
+                      <td className="py-2 text-black">{order.customer.fullName}</td>
+                      <td className="py-2 font-semibold text-black">{formatPrice(order.pricing.total)}</td>
                       <td className="py-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           order.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -777,9 +769,9 @@ const BramsStoreAdmin = () => {
                           {order.status}
                         </span>
                       </td>
-                      <td className="py-2 text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</td>
+                      <td className="py-2 text-sm text-black">{new Date(order.timestamps.created).toLocaleDateString()}</td>
                       <td className="py-2">
-                        <span className="inline-flex items-center text-gray-900">
+                        <span className="inline-flex items-center text-black">
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                           Enterprise
                         </span>
@@ -793,14 +785,14 @@ const BramsStoreAdmin = () => {
         )}
 
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Productos Más Vendidos (Enterprise Data)</h3>
+          <h3 className="text-xl font-bold text-black mb-4">Productos Más Vendidos (Enterprise Data)</h3>
           <div className="space-y-4">
             {products.products?.sort((a, b) => b.sales.totalSold - a.sales.totalSold).slice(0, 5).map(product => (
               <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
                 <div className="flex items-center space-x-4">
                   <img src={product.media.primaryImage} alt={product.name} className="w-12 h-12 object-cover rounded" />
                   <div>
-                    <p className="font-semibold text-gray-900">{product.name}</p>
+                    <p className="font-semibold text-black">{product.name}</p>
                     <p className="text-sm text-gray-600">{product.sales.totalSold} ventas • SKU: {product.sku}</p>
                   </div>
                 </div>
@@ -814,7 +806,7 @@ const BramsStoreAdmin = () => {
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Estado del Sistema Enterprise</h3>
+          <h3 className="text-xl font-bold text-black mb-4">Estado del Sistema Enterprise</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
               <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
@@ -850,7 +842,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="bg-white p-6 rounded-xl shadow-lg text-center">
           <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
+          <h3 className="text-xl font-bold text-black mb-2">Acceso Denegado</h3>
           <p className="text-gray-600">No tienes permisos para acceder a la gestión de productos.</p>
         </div>
       );
@@ -862,7 +854,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-900">Cargando productos desde GitHub...</span>
+          <span className="ml-2 text-black">Cargando productos desde GitHub...</span>
         </div>
       );
     }
@@ -870,7 +862,7 @@ const BramsStoreAdmin = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Gestión de Productos Enterprise</h2>
+          <h2 className="text-2xl font-bold text-black">Gestión de Productos Enterprise</h2>
           <div className="flex space-x-2">
             <button 
               onClick={handleManualSync}
@@ -880,7 +872,21 @@ const BramsStoreAdmin = () => {
               Sync GitHub
             </button>
             <button 
-              onClick={() => setShowNewProductModal(true)}
+              onClick={() => {
+                setCurrentProduct({
+                  name: '',
+                  category: 'smartphones',
+                  price: '',
+                  cost: '',
+                  image: '',
+                  description: '',
+                  stock: '',
+                  featured: false,
+                  sku: '',
+                  id: null
+                });
+                setShowProductModal(true);
+              }}
               className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -890,7 +896,7 @@ const BramsStoreAdmin = () => {
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Productos Enterprise (GitHub Data)</h3>
+          <h3 className="text-lg font-bold text-black mb-4">Productos Enterprise (GitHub Data)</h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -901,7 +907,6 @@ const BramsStoreAdmin = () => {
                   <th className="text-left py-2">Precio</th>
                   <th className="text-left py-2">Stock</th>
                   <th className="text-left py-2">Ventas</th>
-                  <th className="text-left py-2">Estado</th>
                   <th className="text-left py-2">Acciones</th>
                 </tr>
               </thead>
@@ -913,14 +918,14 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold text-gray-900">{product.name}</p>
+                        <p className="font-semibold text-black">{product.name}</p>
                         <p className="text-sm text-gray-600">{product.category.name}</p>
                       </div>
                     </td>
-                    <td className="py-2 font-mono text-sm text-gray-900">{product.sku}</td>
+                    <td className="py-2 font-mono text-sm text-black">{product.sku}</td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold text-gray-900">{formatPrice(product.pricing.price)}</p>
+                        <p className="font-semibold text-black">{formatPrice(product.pricing.price)}</p>
                         <p className="text-xs text-gray-500">Margen: {product.pricing.profitMargin}%</p>
                       </div>
                     </td>
@@ -938,31 +943,17 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold text-gray-900">{product.sales.totalSold}</p>
+                        <p className="font-semibold text-black">{product.sales.totalSold}</p>
                         <p className="text-xs text-gray-500">{formatPrice(product.sales.revenue)}</p>
                       </div>
                     </td>
                     <td className="py-2">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-sm text-green-600">GitHub Sync</span>
-                      </div>
-                    </td>
-                    <td className="py-2">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex gap-2">
                         <button
                           onClick={() => handleEditProduct(product)}
-                          className="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors"
-                          title="Editar producto"
+                          className="text-blue-500 hover:text-blue-700"
                         >
                           <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(product.id, product.name)}
-                          className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
-                          title="Eliminar producto"
-                        >
-                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -981,7 +972,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="bg-white p-6 rounded-xl shadow-lg text-center">
           <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
+          <h3 className="text-xl font-bold text-black mb-2">Acceso Denegado</h3>
           <p className="text-gray-600">No tienes permisos para acceder a la gestión de pedidos.</p>
         </div>
       );
@@ -993,7 +984,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <Loader className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-900">Cargando pedidos desde GitHub...</span>
+          <span className="ml-2 text-black">Cargando pedidos desde GitHub...</span>
         </div>
       );
     }
@@ -1001,7 +992,7 @@ const BramsStoreAdmin = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Gestión de Pedidos Enterprise</h2>
+          <h2 className="text-2xl font-bold text-black">Gestión de Pedidos Enterprise</h2>
           <div className="flex space-x-2">
             <button 
               onClick={handleManualSync}
@@ -1018,7 +1009,7 @@ const BramsStoreAdmin = () => {
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Pedidos Enterprise (GitHub Data)</h3>
+          <h3 className="text-lg font-bold text-black mb-4">Pedidos Enterprise (GitHub Data)</h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -1037,13 +1028,13 @@ const BramsStoreAdmin = () => {
                   <tr key={order.id} className="border-b">
                     <td className="py-2">
                       <div>
-                        <p className="font-mono font-semibold text-gray-900">{order.orderNumber}</p>
+                        <p className="font-mono font-semibold text-black">{order.orderNumber}</p>
                         <p className="text-xs text-gray-500">{order.id}</p>
                       </div>
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-semibold text-gray-900">{order.customer.fullName}</p>
+                        <p className="font-semibold text-black">{order.customer.fullName}</p>
                         <p className="text-sm text-gray-600">{order.customer.email}</p>
                         <p className="text-xs text-gray-500">{order.customer.phone}</p>
                       </div>
@@ -1052,7 +1043,7 @@ const BramsStoreAdmin = () => {
                       <div className="space-y-1">
                         {order.items.map((item, index) => (
                           <div key={index} className="text-sm">
-                            <span className="font-medium text-gray-900">{item.name}</span>
+                            <span className="font-medium text-black">{item.name}</span>
                             <span className="text-gray-500"> x{item.quantity}</span>
                           </div>
                         ))}
@@ -1060,7 +1051,7 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="font-bold text-gray-900">{formatPrice(order.pricing.total)}</p>
+                        <p className="font-bold text-black">{formatPrice(order.pricing.total)}</p>
                         <p className="text-xs text-gray-500">
                           Ganancia: {formatPrice(order.pricing.totalProfit)}
                         </p>
@@ -1078,7 +1069,7 @@ const BramsStoreAdmin = () => {
                     </td>
                     <td className="py-2">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{order.payment.methodName}</p>
+                        <p className="text-sm font-medium text-black">{order.payment.methodName}</p>
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           order.payment.status === 'paid' ? 'bg-green-100 text-green-800' :
                           'bg-yellow-100 text-yellow-800'
@@ -1088,7 +1079,7 @@ const BramsStoreAdmin = () => {
                       </div>
                     </td>
                     <td className="py-2">
-                      <p className="text-sm text-gray-900">{new Date(order.timestamps.created).toLocaleDateString()}</p>
+                      <p className="text-sm text-black">{new Date(order.timestamps.created).toLocaleDateString()}</p>
                       <p className="text-xs text-gray-500">{new Date(order.timestamps.created).toLocaleTimeString()}</p>
                     </td>
                   </tr>
@@ -1106,7 +1097,7 @@ const BramsStoreAdmin = () => {
       return (
         <div className="bg-white p-6 rounded-xl shadow-lg text-center">
           <EyeOff className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Acceso Denegado</h3>
+          <h3 className="text-xl font-bold text-black mb-2">Acceso Denegado</h3>
           <p className="text-gray-600">Solo los Super Administradores pueden acceder a la configuración.</p>
         </div>
       );
@@ -1115,7 +1106,7 @@ const BramsStoreAdmin = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Configuración del Sistema Enterprise</h2>
+          <h2 className="text-2xl font-bold text-black">Configuración del Sistema Enterprise</h2>
           <div className="flex gap-2">
             <button 
               onClick={handleManualSync}
@@ -1163,10 +1154,10 @@ const BramsStoreAdmin = () => {
           <div className="p-6">
             {configTab === 'store' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Configuración de la Tienda Enterprise</h3>
+                <h3 className="text-lg font-bold text-black">Configuración de la Tienda Enterprise</h3>
                 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-4">Información Básica</h4>
+                  <h4 className="font-semibold text-black mb-4">Información Básica</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de la Tienda</label>
@@ -1174,7 +1165,7 @@ const BramsStoreAdmin = () => {
                         type="text"
                         value={storeConfig.storeName}
                         onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                       />
                     </div>
                     <div>
@@ -1183,7 +1174,7 @@ const BramsStoreAdmin = () => {
                         type="email"
                         value={storeConfig.email}
                         onChange={(e) => setStoreConfig(prev => ({ ...prev, email: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                       />
                     </div>
                     <div>
@@ -1192,7 +1183,7 @@ const BramsStoreAdmin = () => {
                         type="tel"
                         value={storeConfig.phone}
                         onChange={(e) => setStoreConfig(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                       />
                     </div>
                     <div>
@@ -1201,7 +1192,7 @@ const BramsStoreAdmin = () => {
                         type="tel"
                         value={storeConfig.whatsapp}
                         onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsapp: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -1210,7 +1201,7 @@ const BramsStoreAdmin = () => {
                         type="text"
                         value={storeConfig.addressComplete}
                         onChange={(e) => setStoreConfig(prev => ({ ...prev, addressComplete: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                       />
                     </div>
                   </div>
@@ -1220,7 +1211,7 @@ const BramsStoreAdmin = () => {
 
             {configTab === 'payments' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Métodos de Pago Enterprise</h3>
+                <h3 className="text-lg font-bold text-black">Métodos de Pago Enterprise</h3>
                 
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                   <div className="flex items-center justify-between mb-4">
@@ -1259,7 +1250,7 @@ const BramsStoreAdmin = () => {
                               sinpe: { ...prev.paymentMethods.sinpe, phone: e.target.value }
                             }
                           }))}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                           placeholder="+506 8888-8888"
                         />
                       </div>
@@ -1275,7 +1266,7 @@ const BramsStoreAdmin = () => {
                               sinpe: { ...prev.paymentMethods.sinpe, name: e.target.value }
                             }
                           }))}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                           placeholder="BramsStore S.A."
                         />
                       </div>
@@ -1291,7 +1282,7 @@ const BramsStoreAdmin = () => {
                               sinpe: { ...prev.paymentMethods.sinpe, cedula: e.target.value }
                             }
                           }))}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                           placeholder="3-101-XXXXXX"
                         />
                       </div>
@@ -1304,7 +1295,7 @@ const BramsStoreAdmin = () => {
             {configTab === 'users' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold text-gray-800">Gestión de Usuarios</h3>
+                  <h3 className="text-lg font-bold text-black">Gestión de Usuarios</h3>
                   <button 
                     onClick={() => setEditingUser({ username: '', email: '', fullName: '', role: 'editor', status: 'active' })}
                     className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
@@ -1338,12 +1329,12 @@ const BramsStoreAdmin = () => {
                                   <RoleIcon className="w-4 h-4" />
                                 </div>
                                 <div>
-                                  <p className="font-semibold">{user.fullName}</p>
+                                  <p className="font-semibold text-black">{user.fullName}</p>
                                   <p className="text-sm text-gray-600">@{user.username}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="py-2">{user.email}</td>
+                            <td className="py-2 text-black">{user.email}</td>
                             <td className="py-2">
                               <span className={`px-2 py-1 rounded-full text-xs ${userRole?.color} bg-opacity-10`}>
                                 {userRole?.name}
@@ -1356,7 +1347,7 @@ const BramsStoreAdmin = () => {
                                 {user.status === 'active' ? 'Activo' : 'Inactivo'}
                               </span>
                             </td>
-                            <td className="py-2">{user.lastLogin}</td>
+                            <td className="py-2 text-black">{user.lastLogin}</td>
                             <td className="py-2">
                               <div className="flex gap-2">
                                 <button
@@ -1386,7 +1377,7 @@ const BramsStoreAdmin = () => {
 
             {configTab === 'security' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Configuración de Seguridad Enterprise</h3>
+                <h3 className="text-lg font-bold text-black">Configuración de Seguridad Enterprise</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-red-50 p-4 rounded-lg border border-red-200">
@@ -1400,7 +1391,7 @@ const BramsStoreAdmin = () => {
                         <input
                           type="password"
                           placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
+                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-black"
                         />
                         <p className="text-xs text-red-600 mt-1">Para actualizaciones automáticas de productos</p>
                       </div>
@@ -1409,33 +1400,33 @@ const BramsStoreAdmin = () => {
                         <input
                           type="password"
                           placeholder="sk_live_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900"
+                          className="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 text-black"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
+                    <h4 className="font-semibold text-black mb-4 flex items-center">
                       <Shield className="w-5 h-5 mr-2" />
                       Configuraciones de Seguridad
                     </h4>
                     <div className="space-y-3">
                       <label className="flex items-center">
                         <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Autenticación de dos factores</span>
+                        <span className="text-sm text-black">Autenticación de dos factores</span>
                       </label>
                       <label className="flex items-center">
                         <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Logs de actividad detallados</span>
+                        <span className="text-sm text-black">Logs de actividad detallados</span>
                       </label>
                       <label className="flex items-center">
                         <input type="checkbox" className="mr-3" defaultChecked />
-                        <span className="text-sm text-gray-700">Backup automático diario</span>
+                        <span className="text-sm text-black">Backup automático diario</span>
                       </label>
                       <label className="flex items-center">
                         <input type="checkbox" className="mr-3" />
-                        <span className="text-sm text-gray-700">Bloqueo de IP sospechosas</span>
+                        <span className="text-sm text-black">Bloqueo de IP sospechosas</span>
                       </label>
                     </div>
                   </div>
@@ -1472,7 +1463,7 @@ const BramsStoreAdmin = () => {
 
             {configTab === 'notifications' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-bold text-gray-800">Sistema de Notificaciones Enterprise</h3>
+                <h3 className="text-lg font-bold text-black">Sistema de Notificaciones Enterprise</h3>
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <div className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
@@ -1487,10 +1478,12 @@ const BramsStoreAdmin = () => {
     );
   };
 
-  const EditProductModal = () => showEditProductModal && editingProduct && (
+  const ProductModal = () => showProductModal && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-6">Editar Producto</h3>
+        <h3 className="text-lg font-bold mb-6">
+          {currentProduct.id ? 'Editar Producto' : 'Agregar Nuevo Producto'}
+        </h3>
         
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1500,9 +1493,9 @@ const BramsStoreAdmin = () => {
               </label>
               <input
                 type="text"
-                value={editingProduct.name}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                value={currentProduct.name}
+                onChange={(e) => setCurrentProduct(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="iPhone 15 Pro Max"
                 required
               />
@@ -1514,9 +1507,9 @@ const BramsStoreAdmin = () => {
               </label>
               <input
                 type="text"
-                value={editingProduct.sku}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                value={currentProduct.sku}
+                onChange={(e) => setCurrentProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="IP15P-256"
                 required
               />
@@ -1527,9 +1520,9 @@ const BramsStoreAdmin = () => {
                 Categoría
               </label>
               <select
-                value={editingProduct.category}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                value={currentProduct.category}
+                onChange={(e) => setCurrentProduct(prev => ({ ...prev, category: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
               >
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
@@ -1545,9 +1538,9 @@ const BramsStoreAdmin = () => {
               </label>
               <input
                 type="number"
-                value={editingProduct.price}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, price: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                value={currentProduct.price}
+                onChange={(e) => setCurrentProduct(prev => ({ ...prev, price: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="650000"
                 required
               />
@@ -1559,317 +1552,9 @@ const BramsStoreAdmin = () => {
               </label>
               <input
                 type="number"
-                value={editingProduct.cost}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, cost: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="500000"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Stock Actual
-              </label>
-              <input
-                type="number"
-                value={editingProduct.stock}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, stock: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="10"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Descripción
-            </label>
-            <textarea
-              value={editingProduct.description}
-              onChange={(e) => setEditingProduct(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-              rows="3"
-              placeholder="Describe las características principales del producto..."
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL de Imagen
-            </label>
-            <input
-              type="url"
-              value={editingProduct.image}
-              onChange={(e) => setEditingProduct(prev => ({ ...prev, image: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-              placeholder="https://images.unsplash.com/..."
-            />
-          </div>
-          
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="editFeatured"
-              checked={editingProduct.featured}
-              onChange={(e) => setEditingProduct(prev => ({ ...prev, featured: e.target.checked }))}
-              className="mr-2"
-            />
-            <label htmlFor="editFeatured" className="text-sm text-gray-700">
-              ⭐ Producto destacado (aparecerá en la página principal)
-            </label>
-          </div>
-        </div>
-        
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={handleUpdateProduct}
-            className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Actualizar Producto
-          </button>
-          <button
-            onClick={() => {
-              setShowEditProductModal(false);
-              setEditingProduct(null);
-            }}
-            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const EditProductModal = () => showEditProductModal && editingProduct && (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-6">Editar Producto</h3>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre del Producto *
-              </label>
-              <input
-                type="text"
-                value={editingProduct.name}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="iPhone 15 Pro Max"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                SKU *
-              </label>
-              <input
-                type="text"
-                value={editingProduct.sku}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="IP15P-256"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Categoría
-              </label>
-              <select
-                value={editingProduct.category}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-              >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Precio de Venta (₡) *
-              </label>
-              <input
-                type="number"
-                value={editingProduct.price}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, price: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="650000"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Costo (₡)
-              </label>
-              <input
-                type="number"
-                value={editingProduct.cost}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, cost: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="500000"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Stock Actual
-              </label>
-              <input
-                type="number"
-                value={editingProduct.stock}
-                onChange={(e) => setEditingProduct(prev => ({ ...prev, stock: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="10"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Descripción
-            </label>
-            <textarea
-              value={editingProduct.description}
-              onChange={(e) => setEditingProduct(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-              rows="3"
-              placeholder="Describe las características principales del producto..."
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL de Imagen
-            </label>
-            <input
-              type="url"
-              value={editingProduct.image}
-              onChange={(e) => setEditingProduct(prev => ({ ...prev, image: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-              placeholder="https://images.unsplash.com/..."
-            />
-          </div>
-          
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="editFeatured"
-              checked={editingProduct.featured}
-              onChange={(e) => setEditingProduct(prev => ({ ...prev, featured: e.target.checked }))}
-              className="mr-2"
-            />
-            <label htmlFor="editFeatured" className="text-sm text-gray-700">
-              ⭐ Producto destacado (aparecerá en la página principal)
-            </label>
-          </div>
-        </div>
-        
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={handleUpdateProduct}
-            className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Actualizar Producto
-          </button>
-          <button
-            onClick={() => {
-              setShowEditProductModal(false);
-              setEditingProduct(null);
-            }}
-            className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-6">Agregar Nuevo Producto</h3>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre del Producto *
-              </label>
-              <input
-                type="text"
-                value={newProduct.name}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="iPhone 15 Pro Max"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                SKU *
-              </label>
-              <input
-                type="text"
-                value={newProduct.sku}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, sku: e.target.value.toUpperCase() }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="IP15P-256"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Categoría
-              </label>
-              <select
-                value={newProduct.category}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
-              >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Precio de Venta (₡) *
-              </label>
-              <input
-                type="number"
-                value={newProduct.price}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, price: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                placeholder="650000"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Costo (₡)
-              </label>
-              <input
-                type="number"
-                value={newProduct.cost}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, cost: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                value={currentProduct.cost}
+                onChange={(e) => setCurrentProduct(prev => ({ ...prev, cost: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="500000"
               />
             </div>
@@ -1880,9 +1565,9 @@ const BramsStoreAdmin = () => {
               </label>
               <input
                 type="number"
-                value={newProduct.stock}
-                onChange={(e) => setNewProduct(prev => ({ ...prev, stock: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                value={currentProduct.stock}
+                onChange={(e) => setCurrentProduct(prev => ({ ...prev, stock: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="10"
               />
             </div>
@@ -1893,9 +1578,9 @@ const BramsStoreAdmin = () => {
               Descripción
             </label>
             <textarea
-              value={newProduct.description}
-              onChange={(e) => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              value={currentProduct.description}
+              onChange={(e) => setCurrentProduct(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
               rows="3"
               placeholder="Describe las características principales del producto..."
             />
@@ -1907,9 +1592,9 @@ const BramsStoreAdmin = () => {
             </label>
             <input
               type="url"
-              value={newProduct.image}
-              onChange={(e) => setNewProduct(prev => ({ ...prev, image: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              value={currentProduct.image}
+              onChange={(e) => setCurrentProduct(prev => ({ ...prev, image: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="https://images.unsplash.com/..."
             />
           </div>
@@ -1918,11 +1603,11 @@ const BramsStoreAdmin = () => {
             <input
               type="checkbox"
               id="featured"
-              checked={newProduct.featured}
-              onChange={(e) => setNewProduct(prev => ({ ...prev, featured: e.target.checked }))}
+              checked={currentProduct.featured}
+              onChange={(e) => setCurrentProduct(prev => ({ ...prev, featured: e.target.checked }))}
               className="mr-2"
             />
-            <label htmlFor="featured" className="text-sm text-gray-700">
+            <label htmlFor="featured" className="text-sm text-black">
               ⭐ Producto destacado (aparecerá en la página principal)
             </label>
           </div>
@@ -1930,14 +1615,37 @@ const BramsStoreAdmin = () => {
         
         <div className="flex gap-3 mt-6">
           <button
-            onClick={handleAddProduct}
+            onClick={handleSaveProduct}
             className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Crear Producto
+            {currentProduct.id ? (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Guardar Cambios
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                Crear Producto
+              </>
+            )}
           </button>
           <button
-            onClick={() => setShowNewProductModal(false)}
+            onClick={() => {
+              setShowProductModal(false);
+              setCurrentProduct({
+                name: '',
+                category: 'smartphones',
+                price: '',
+                cost: '',
+                image: '',
+                description: '',
+                stock: '',
+                featured: false,
+                sku: '',
+                id: null
+              });
+            }}
             className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
           >
             Cancelar
@@ -1961,7 +1669,7 @@ const BramsStoreAdmin = () => {
                 type="text"
                 value={editingUser.username}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="usuario123"
                 disabled={editingUser.id === 1}
               />
@@ -1978,7 +1686,7 @@ const BramsStoreAdmin = () => {
                 type="email"
                 value={editingUser.email}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="usuario@bramsstore.com"
               />
             </div>
@@ -1991,7 +1699,7 @@ const BramsStoreAdmin = () => {
                 type="text"
                 value={editingUser.fullName}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, fullName: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 placeholder="Juan Pérez"
               />
             </div>
@@ -2003,7 +1711,7 @@ const BramsStoreAdmin = () => {
               <select
                 value={editingUser.role}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 disabled={editingUser.id === 1}
               >
                 {roles.map(role => (
@@ -2024,7 +1732,7 @@ const BramsStoreAdmin = () => {
               <select
                 value={editingUser.status}
                 onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
                 disabled={editingUser.id === 1}
               >
                 <option value="active">✅ Activo - Puede acceder al sistema</option>
@@ -2110,7 +1818,7 @@ const BramsStoreAdmin = () => {
           </div>
           {currentUser && (
             <div className="mt-4 p-2 bg-gray-50 rounded-lg">
-              <p className="text-sm font-semibold text-gray-800">{currentUser.fullName}</p>
+              <p className="text-sm font-semibold text-black">{currentUser.fullName}</p>
               <p className="text-xs text-gray-600">{roles.find(r => r.id === currentUser.role)?.name}</p>
               <div className="flex items-center mt-1">
                 <div className={`w-2 h-2 rounded-full mr-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -2183,7 +1891,7 @@ const BramsStoreAdmin = () => {
           <div className="mb-4 p-2 bg-gray-50 rounded-lg text-xs">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Última sync:</span>
-              <span className="text-gray-900">{formatTimeAgo(lastSync)}</span>
+              <span className="text-black">{formatTimeAgo(lastSync)}</span>
             </div>
             <div className="flex items-center justify-between mt-1">
               <span className="text-gray-600">Estado:</span>
@@ -2191,7 +1899,7 @@ const BramsStoreAdmin = () => {
                 syncStatus === 'success' ? 'text-green-600' :
                 syncStatus === 'error' ? 'text-red-600' :
                 syncStatus === 'syncing' ? 'text-blue-600' :
-                'text-gray-900'
+                'text-black'
               }`}>
                 {syncStatus === 'success' ? 'Sincronizado' :
                  syncStatus === 'error' ? 'Error' :
@@ -2219,8 +1927,7 @@ const BramsStoreAdmin = () => {
       </div>
 
       <EditUserModal />
-      <NewProductModal />
-      <EditProductModal />
+      <ProductModal />
     </div>
   );
 };
