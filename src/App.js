@@ -42,6 +42,9 @@ import {
   MessageCircle
 } from 'lucide-react';
 
+// 🔧 IMPORTAR LA FUNCIÓN PARA GUARDAR EN GITHUB
+import { guardarProductosDesdeAdmin } from './BramsStoreAPI';
+
 const BramsStoreAdmin = () => {
   // Estados de autenticación
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -438,12 +441,16 @@ const BramsStoreAdmin = () => {
     }
   };
 
-  // Función para agregar o actualizar producto
-  const handleSaveProduct = () => {
+  // 🔧 FUNCIÓN CORREGIDA PARA GUARDAR PRODUCTOS EN GITHUB
+  const handleSaveProduct = async () => {
     if (!currentProduct.name || !currentProduct.price || !currentProduct.sku) {
       addNotification('error', 'Por favor completa los campos requeridos: Nombre, SKU y Precio');
       return;
     }
+
+    // Mostrar loading
+    setSyncStatus('syncing');
+    addNotification('info', 'Guardando producto...');
 
     const product = {
       id: currentProduct.id || `prod_${Date.now()}`,
@@ -481,47 +488,76 @@ const BramsStoreAdmin = () => {
       }
     };
 
+    let updatedProducts;
+    
     if (currentProduct.id) {
       // Actualizar producto existente
-      setEnterpriseData(prev => {
-        const updatedProducts = prev.products.products.map(p => 
-          p.id === currentProduct.id ? product : p
-        );
-        return {
-          ...prev,
-          products: {
-            ...prev.products,
-            products: updatedProducts
-          }
-        };
-      });
-      addNotification('success', `Producto "${currentProduct.name}" actualizado exitosamente`);
+      updatedProducts = enterpriseData.products.products.map(p => 
+        p.id === currentProduct.id ? product : p
+      );
+      addNotification('info', `Actualizando "${currentProduct.name}" en GitHub...`);
     } else {
       // Agregar nuevo producto
+      updatedProducts = [...enterpriseData.products.products, product];
+      addNotification('info', `Creando "${currentProduct.name}" en GitHub...`);
+    }
+
+    // 🚀 AQUÍ ESTÁ LA SOLUCIÓN - Guardar en GitHub
+    try {
+      // Primero actualizar estado local
       setEnterpriseData(prev => ({
         ...prev,
         products: {
           ...prev.products,
-          products: [...prev.products.products, product]
+          products: updatedProducts
         }
       }));
-      addNotification('success', `Producto "${currentProduct.name}" creado exitosamente`);
+
+      // 🔧 GUARDAR EN GITHUB (ESTO ES LO QUE FALTABA)
+      await guardarProductosDesdeAdmin({
+        products: updatedProducts,
+        metadata: { 
+          totalProducts: updatedProducts.length,
+          lastUpdated: new Date().toISOString(),
+          updatedBy: currentUser?.username || 'admin'
+        }
+      });
+
+      setSyncStatus('success');
+      addNotification('success', currentProduct.id ? 
+        `✅ Producto "${currentProduct.name}" actualizado y sincronizado con GitHub` :
+        `✅ Producto "${currentProduct.name}" creado y sincronizado con GitHub`
+      );
+      
+      // Limpiar formulario y cerrar modal
+      setCurrentProduct({
+        name: '',
+        category: 'smartphones',
+        price: '',
+        cost: '',
+        image: '',
+        description: '',
+        stock: '',
+        featured: false,
+        sku: '',
+        id: null
+      });
+      setShowProductModal(false);
+
+    } catch (error) {
+      console.error('Error guardando en GitHub:', error);
+      setSyncStatus('error');
+      addNotification('error', `❌ Error sincronizando con GitHub: ${error.message}`);
+      
+      // Revertir cambios locales si falla GitHub
+      setEnterpriseData(prev => ({
+        ...prev,
+        products: {
+          ...prev.products,
+          products: enterpriseData.products.products // Revertir a estado anterior
+        }
+      }));
     }
-    
-    // Limpiar formulario y cerrar modal
-    setCurrentProduct({
-      name: '',
-      category: 'smartphones',
-      price: '',
-      cost: '',
-      image: '',
-      description: '',
-      stock: '',
-      featured: false,
-      sku: '',
-      id: null
-    });
-    setShowProductModal(false);
   };
 
   // Abrir modal para editar producto
