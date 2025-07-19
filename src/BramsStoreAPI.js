@@ -1,4 +1,4 @@
-const GITHUB_TOKEN = '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'; // Tu token actual
+const GITHUB_TOKEN = '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'; // Tu token actual
 const REPO = 'Lex-Salas/bramsstore-data';
 const FILE_PATH = 'products.json';
 const API_URL = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
